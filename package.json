@@ -1,0 +1,12 @@
+{
+  "name": "node-dmx-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@types/node": "^22.5.5",
+    "dgram": "^1.0.1",
+    "fs": "^0.0.1-security"
+  }
+}
