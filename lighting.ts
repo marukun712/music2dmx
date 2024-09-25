@@ -4,6 +4,7 @@ type Channel = {
 };
 type Fixture =
   | "spotlight"
+  | "spotlight_tilt"
   | "staticPatch"
   | "strobePatch"
   | "laser"
@@ -72,17 +73,40 @@ function getFixtureChannels(fixture: Fixture): Channel[] {
         { number: 53, value: 128 },
         { number: 55, value: 255 },
       ];
+    case "spotlight_tilt":
+      return [
+        { number: 13, value: 255 },
+        { number: 14, value: 255 },
+        { number: 18, value: 128 },
+        { number: 20, value: 183 },
+        { number: 22, value: 200 },
+        { number: 24, value: 255 },
+        { number: 25, value: 255 },
+        { number: 29, value: 128 },
+        { number: 31, value: 183 },
+        { number: 33, value: 200 },
+        { number: 35, value: 255 },
+        { number: 36, value: 255 },
+        { number: 40, value: 128 },
+        { number: 42, value: 183 },
+        { number: 44, value: 200 },
+        { number: 46, value: 255 },
+        { number: 47, value: 255 },
+        { number: 51, value: 128 },
+        { number: 53, value: 183 },
+        { number: 55, value: 200 },
+      ];
     case "staticPatch":
       const static_patch: Channel[] = [];
 
-      for (let i = 201; i < 245; i++) {
+      for (let i = 201; i <= 245; i++) {
         static_patch.push({ number: i, value: 255 });
       }
       return static_patch;
     case "strobePatch":
       const strobe_patch: Channel[] = [];
 
-      for (let i = 301; i < 312; i++) {
+      for (let i = 301; i <= 312; i++) {
         strobe_patch.push({ number: i, value: 255 });
       }
       return strobe_patch;
@@ -90,21 +114,21 @@ function getFixtureChannels(fixture: Fixture): Channel[] {
     case "laser":
       const laser: Channel[] = [];
 
-      for (let i = 301; i < 306; i++) {
+      for (let i = 301; i <= 306; i++) {
         laser.push({ number: i, value: 255 });
       }
       return laser;
     case "pyro":
       const pyro: Channel[] = [];
 
-      for (let i = 201; i < 204; i++) {
+      for (let i = 201; i <= 204; i++) {
         pyro.push({ number: i, value: 255 });
       }
       return pyro;
     case "fireworks":
       const fireworks: Channel[] = [];
 
-      for (let i = 401; i < 403; i++) {
+      for (let i = 401; i <= 403; i++) {
         fireworks.push({ number: i, value: 255 });
       }
       return fireworks;

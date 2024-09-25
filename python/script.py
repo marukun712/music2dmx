@@ -46,15 +46,16 @@ def get_section_label(value):
 #セクションごとのラベルを割り当て（大、中、小）
 section_labels = [get_section_label(value) for value in rms]
 
-section_start_time = times[0]  #セクションの開始時間
 min_section_length = 4   #最小セクションの長さ（フレーム数）
 label_buffer = []
+last_created = 0
 
 sections = []
 jsonData = {"bpm":tempo[0],"sections":sections}
 
 #セクションの作成
 def create_section(start, end, label):
+    print(f"created:{label}")
     start_minutes = int(start // 60)
     start_seconds = int(start % 60)
     end_minutes = int(end // 60)
@@ -68,23 +69,25 @@ def create_section(start, end, label):
 
 #セクションのラベルと対応する時間を処理
 for i, (time, label) in enumerate(zip(times, section_labels)):
+    print(label)
     #ラベルをバッファに保存
     label_buffer.append(label)
-      
+
     #ラベルが変わった時
     if i > 0 and section_labels[i - 1] != label:
         if(math.isclose(time, chorus_estimated_time, rel_tol=0.07)): #大サビ付近のセクションの場合は、セクションをbig_chorusとする
-            create_section(section_start_time, times[i - 1], "big_chorus")
+            create_section(last_created, times[i - 1], "big_chorus")
+            last_created = times[i - 1]
+
         elif len(label_buffer) >= min_section_length:
-            create_section(section_start_time, times[i - 1], section_labels[i - 1])
+            create_section(last_created, times[i - 1], section_labels[i - 1])
+            last_created = times[i - 1]
 
-        #セクション開始時間を更新
-        section_start_time = times[i]
         label_buffer = []  #バッファをリセット
-
+    
 #最後に残ったセクションを処理
 if label_buffer:
-    create_section(section_start_time, times[-1], section_labels[-1])
+    create_section(last_created, times[-1], section_labels[-1])
 
 #JSON形式で出力
 json_output = json.dumps(jsonData, ensure_ascii=False, indent=2)
@@ -92,3 +95,4 @@ json_output = json.dumps(jsonData, ensure_ascii=False, indent=2)
 #JSONファイルに保存
 with open('music_sections.json', 'w', encoding='utf-8') as f:
     json.dump(jsonData, f, ensure_ascii=False, indent=2)
+    
