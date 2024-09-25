@@ -1,124 +1,55 @@
-[
-  {
-    "fixture_name": "Moving Head_Patch_1",
-    "channels": [1, 2, 7, 8, 9, 10]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_1",
-    "channels": [5, 6, 7, 8, 9, 10]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_2",
-    "channels": [17, 18, 19, 20, 21, 22]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_3",
-    "channels": [34, 35, 36, 37, 38, 39]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_4",
-    "channels": [45, 46, 47, 48, 49, 50]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_5",
-    "channels": [56, 57, 58, 59, 60, 61]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_6",
-    "channels": [68, 69, 70, 71, 72, 73]
-  },
-  {
-    "fixture_name": "Moving Head_Patch_7",
-    "channels": [79, 80, 81, 82, 83, 84]
-  },
-  {
-    "fixture_name": "Moving Mirror_Patch",
-    "channels": [101, 102, 103, 104, 105, 106]
-  },
-  {
-    "fixture_name": "Moving Mirror_Patch_1",
-    "channels": [112, 113, 114, 115, 116, 117]
-  },
-  {
-    "fixture_name": "Static_Patch_0",
-    "channels": [201, 202, 203, 204, 205]
-  },
-  {
-    "fixture_name": "Static_Patch_1",
-    "channels": [206, 207, 208, 209, 210]
-  },
-  {
-    "fixture_name": "Static_Patch_2",
-    "channels": [211, 212, 213, 214, 215]
-  },
-  {
-    "fixture_name": "Static_Patch_3",
-    "channels": [216, 217, 218, 219, 220]
-  },
-  {
-    "fixture_name": "Static_Patch_4",
-    "channels": [221, 222, 223, 224, 225]
-  },
-  {
-    "fixture_name": "Static_Patch_5",
-    "channels": [226, 227, 228, 229, 230]
-  },
-  {
-    "fixture_name": "Static_Patch_6",
-    "channels": [231, 232, 233, 234, 235]
-  },
-  {
-    "fixture_name": "Static_Patch_7",
-    "channels": [236, 237, 238, 239, 240]
-  },
-  {
-    "fixture_name": "Static_Patch_8",
-    "channels": [241, 242, 243, 244, 245]
-  },
-  {
-    "fixture_name": "Strobe_Patch",
-    "channels": [301, 302, 303, 304, 305, 306]
-  },
-  {
-    "fixture_name": "LEDWash_Patch",
-    "channels": [401, 402, 403, 404, 405, 406]
-  },
-  {
-    "fixture_name": "LEDWash_Patch_1",
-    "channels": [410, 411, 412, 413, 414, 415]
-  },
-  {
-    "fixture_name": "Matrix_Patch",
-    "channels": [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-      22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-    ]
-  },
-  {
-    "fixture_name": "Matrix_Patch_1",
-    "channels": [
-      67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84,
-      85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98
-    ]
-  },
-  {
-    "fixture_name": "Matrix_Patch_2",
-    "channels": [
-      133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
-      148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162,
-      163, 164
-    ]
-  },
-  {
-    "fixture_name": "Pyro_Patch",
-    "channels": [201, 202, 203]
-  },
-  {
-    "fixture_name": "Laser_Patch",
-    "channels": [301, 302, 303, 304, 305, 306]
-  },
-  {
-    "fixture_name": "Fire_Patch",
-    "channels": [401, 402, 403]
-  }
-]
+{
+  "universe": 1,
+  "fixtures": [
+    {
+      "name": "Moving Head_Patch",
+      "patches": [
+        { "id": 1, "start_channel": 1 },
+        { "id": 2, "start_channel": 23 },
+        { "id": 3, "start_channel": 34 },
+        { "id": 4, "start_channel": 45 },
+        { "id": 5, "start_channel": 56 },
+        { "id": 6, "start_channel": 65 },
+        { "id": 7, "start_channel": 78 }
+      ]
+    },
+    {
+      "name": "Moving Mirror_Patch",
+      "patches": [
+        { "id": 1, "start_channel": 97 },
+        { "id": 2, "start_channel": 109 }
+      ]
+    },
+    {
+      "name": "Static_Patch",
+      "patches": [
+        { "id": 0, "start_channel": 193 },
+        { "id": 1, "start_channel": 201 },
+        { "id": 2, "start_channel": 209 },
+        { "id": 3, "start_channel": 217 },
+        { "id": 4, "start_channel": 225 },
+        { "id": 5, "start_channel": 226 },
+        { "id": 6, "start_channel": 231 },
+        { "id": 7, "start_channel": 236 },
+        { "id": 8, "start_channel": 243 }
+      ]
+    },
+    {
+      "name": "Strobe_Pa",
+      "patches": [
+        { "id": 0, "start_channel": 289 },
+        { "id": 1, "start_channel": 301 },
+        { "id": 2, "start_channel": 305 },
+        { "id": 3, "start_channel": 309 },
+        { "id": 4, "start_channel": 313 }
+      ]
+    },
+    {
+      "name": "LEDWash_Patch",
+      "patches": [
+        { "id": 0, "start_channel": 409 },
+        { "id": 1, "start_channel": 413 }
+      ]
+    }
+  ]
+}
