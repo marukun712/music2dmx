@@ -2,7 +2,13 @@ type Channel = {
   number: number;
   value: number;
 };
-type Fixture = "spotlight" | "staticPatch";
+type Fixture =
+  | "spotlight"
+  | "staticPatch"
+  | "strobePatch"
+  | "laser"
+  | "pyro"
+  | "fireworks";
 
 export function addFixtures(fixtures: Fixture[]) {
   let data = new Uint8Array(512);
@@ -22,6 +28,29 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
+/* TODO BPMと連動したshutter値の計算
+// DMXのshutter値をBPMに基づいて計算する関数
+function calculateShutterValueFromBPM(bpm: number): number {
+  // BPMから1ビートあたりの秒数を計算
+  const secondsPerBeat = 60 / bpm;
+
+  // DMXの更新レート（一般的に1秒間に44回）
+  const dmxUpdateRate = 44;
+
+  // 1ビートあたりのDMXフレーム数を計算
+  const framesPerBeat = secondsPerBeat * dmxUpdateRate;
+
+  // shutterの範囲（1-255）にマッピング
+  let shutterValue = Math.round((framesPerBeat / dmxUpdateRate) * 255);
+
+  // 値を1-255の範囲に制限
+  shutterValue = Math.max(1, Math.min(255, shutterValue));
+
+  return shutterValue;
+}
+*/
+
+//UE.5.1で一部の照明が、動作しなかったため一旦動作するもののみ動作させる
 function getFixtureChannels(fixture: Fixture): Channel[] {
   switch (fixture) {
     case "spotlight":
@@ -44,12 +73,41 @@ function getFixtureChannels(fixture: Fixture): Channel[] {
         { number: 55, value: 255 },
       ];
     case "staticPatch":
-      const tmp: Channel[] = [];
+      const static_patch: Channel[] = [];
 
-      for (let i = 206; i < 245; i++) {
-        tmp.push({ number: i, value: 255 });
+      for (let i = 201; i < 245; i++) {
+        static_patch.push({ number: i, value: 255 });
       }
-      return tmp;
+      return static_patch;
+    case "strobePatch":
+      const strobe_patch: Channel[] = [];
+
+      for (let i = 301; i < 312; i++) {
+        strobe_patch.push({ number: i, value: 255 });
+      }
+      return strobe_patch;
+    //ここからuniverse2
+    case "laser":
+      const laser: Channel[] = [];
+
+      for (let i = 301; i < 306; i++) {
+        laser.push({ number: i, value: 255 });
+      }
+      return laser;
+    case "pyro":
+      const pyro: Channel[] = [];
+
+      for (let i = 201; i < 204; i++) {
+        pyro.push({ number: i, value: 255 });
+      }
+      return pyro;
+    case "fireworks":
+      const fireworks: Channel[] = [];
+
+      for (let i = 401; i < 403; i++) {
+        fireworks.push({ number: i, value: 255 });
+      }
+      return fireworks;
     default:
       return [];
   }

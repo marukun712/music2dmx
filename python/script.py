@@ -51,7 +51,7 @@ min_section_length = 4   #最小セクションの長さ（フレーム数）
 label_buffer = []
 
 sections = []
-jsonData = [{"bpm":tempo[0]},{"sections":sections}]
+jsonData = {"bpm":tempo[0],"sections":sections}
 
 #セクションの作成
 def create_section(start, end, label):
