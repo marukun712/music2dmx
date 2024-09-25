@@ -1,5 +1,6 @@
 import { sendArtNetPacket } from "./art-net";
 import fs from "fs";
+import { addFixtures } from "./lighting";
 
 const artNetIp = "100.73.74.135";
 const artNetPort = 6454;
@@ -13,32 +14,6 @@ const lightingData = JSON.parse(
   fs.readFileSync("./python/music_sections.json", "utf8")
 );
 
-function lowDMX() {
-  const data = new Uint8Array(512);
-
-  data[13 - 1] = 255;
-  data[14 - 1] = 255;
-  data[20 - 1] = 128;
-  data[22 - 1] = 255;
-
-  data[24 - 1] = 255;
-  data[25 - 1] = 255;
-  data[31 - 1] = 128;
-  data[33 - 1] = 255;
-
-  data[35 - 1] = 255;
-  data[36 - 1] = 255;
-  data[42 - 1] = 128;
-  data[44 - 1] = 255;
-
-  data[46 - 1] = 255;
-  data[47 - 1] = 255;
-  data[53 - 1] = 128;
-  data[55 - 1] = 255;
-
-  sendArtNetPacket(artNetIp, artNetPort, 1, data);
-}
-
 function updateLighting(currentTime) {
   //現在の再生位置に合うセクションを探す
   const currentSection = lightingData.find(
@@ -50,7 +25,12 @@ function updateLighting(currentTime) {
   if (currentSection) {
     switch (currentSection.level) {
       case "low":
-        lowDMX();
+        sendArtNetPacket(
+          artNetIp,
+          artNetPort,
+          1,
+          addFixtures(["spotlight", "staticPatch"])
+        );
       case "mid":
         sendArtNetPacket(artNetIp, artNetPort, 2, new Uint8Array(512));
       case "big":
@@ -90,3 +70,10 @@ function startLightingControl() {
     }
   }, 1000);
 }
+
+sendArtNetPacket(
+  artNetIp,
+  artNetPort,
+  1,
+  addFixtures(["spotlight", "staticPatch"])
+);
