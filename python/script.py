@@ -5,7 +5,7 @@ import math
 import json
 
 #音声ファイルをロード
-y, sr = librosa.load("music/mirage_voyage.wav")
+y, sr = librosa.load("./python/music/mirage_voyage.wav")
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
 #特徴量算出用のパラメタ
@@ -93,6 +93,6 @@ if label_buffer:
 json_output = json.dumps(jsonData, ensure_ascii=False, indent=2)
 
 #JSONファイルに保存
-with open('music_sections.json', 'w', encoding='utf-8') as f:
+with open('./python/music_sections.json', 'w', encoding='utf-8') as f:
     json.dump(jsonData, f, ensure_ascii=False, indent=2)
     
