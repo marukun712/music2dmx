@@ -29,7 +29,6 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-/* TODO BPMと連動したshutter値の計算
 // DMXのshutter値をBPMに基づいて計算する関数
 function calculateShutterValueFromBPM(bpm: number): number {
   // BPMから1ビートあたりの秒数を計算
@@ -49,7 +48,6 @@ function calculateShutterValueFromBPM(bpm: number): number {
 
   return shutterValue;
 }
-*/
 
 //UE.5.1で一部の照明が、動作しなかったため一旦動作するもののみ動作させる
 function getFixtureChannels(fixture: Fixture): Channel[] {

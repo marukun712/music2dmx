@@ -75,7 +75,7 @@ for i, (time, label) in enumerate(zip(times, section_labels)):
 
     #ラベルが変わった時
     if i > 0 and section_labels[i - 1] != label:
-        if(math.isclose(time, chorus_estimated_time, rel_tol=0.07)): #大サビ付近のセクションの場合は、セクションをbig_chorusとする
+        if(math.isclose(time, chorus_estimated_time, rel_tol=0.07 and time > chorus_estimated_time)): #大サビ付近のセクションの場合は、セクションをbig_chorusとする
             create_section(last_created, times[i - 1], "big_chorus")
             last_created = times[i - 1]
 

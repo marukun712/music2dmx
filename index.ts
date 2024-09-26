@@ -68,20 +68,13 @@ function updateLighting(currentTime: number): void {
         break;
 
       case "big":
-        resetDMX([1, 2]);
-
         sendArtNetPacket(
           artNetIp,
           artNetPort,
           1,
           addFixtures(["spotlight_tilt", "staticPatch", "strobePatch"])
         );
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          2,
-          addFixtures(["laser", "pyro"])
-        );
+        sendArtNetPacket(artNetIp, artNetPort, 2, addFixtures(["pyro"]));
         break;
 
       case "big_chorus":
@@ -136,4 +129,6 @@ async function startLightingControl() {
   }, 100); // 1ミリ秒ごとに更新
 }
 
-startLightingControl();
+setTimeout(() => {
+  startLightingControl();
+}, 10000);

@@ -1,0 +1,130 @@
+{
+  "bpm": 129.19921875,
+  "sections": [
+    {
+      "start": "0:00",
+      "end": "0:11",
+      "level": "low"
+    },
+    {
+      "start": "0:11",
+      "end": "0:23",
+      "level": "big"
+    },
+    {
+      "start": "0:23",
+      "end": "0:39",
+      "level": "low"
+    },
+    {
+      "start": "0:39",
+      "end": "0:53",
+      "level": "mid"
+    },
+    {
+      "start": "0:53",
+      "end": "1:03",
+      "level": "low"
+    },
+    {
+      "start": "1:03",
+      "end": "1:06",
+      "level": "mid"
+    },
+    {
+      "start": "1:06",
+      "end": "1:09",
+      "level": "big"
+    },
+    {
+      "start": "1:09",
+      "end": "1:41",
+      "level": "big"
+    },
+    {
+      "start": "1:41",
+      "end": "1:44",
+      "level": "mid"
+    },
+    {
+      "start": "1:44",
+      "end": "1:55",
+      "level": "big"
+    },
+    {
+      "start": "1:55",
+      "end": "2:03",
+      "level": "low"
+    },
+    {
+      "start": "2:03",
+      "end": "2:12",
+      "level": "mid"
+    },
+    {
+      "start": "2:12",
+      "end": "2:20",
+      "level": "low"
+    },
+    {
+      "start": "2:20",
+      "end": "2:24",
+      "level": "mid"
+    },
+    {
+      "start": "2:24",
+      "end": "2:58",
+      "level": "big"
+    },
+    {
+      "start": "2:58",
+      "end": "3:02",
+      "level": "low"
+    },
+    {
+      "start": "3:02",
+      "end": "3:18",
+      "level": "mid"
+    },
+    {
+      "start": "3:18",
+      "end": "3:21",
+      "level": "low"
+    },
+    {
+      "start": "3:21",
+      "end": "3:48",
+      "level": "big_chorus"
+    },
+    {
+      "start": "3:48",
+      "end": "3:50",
+      "level": "big_chorus"
+    },
+    {
+      "start": "3:50",
+      "end": "3:51",
+      "level": "big_chorus"
+    },
+    {
+      "start": "3:51",
+      "end": "3:52",
+      "level": "big_chorus"
+    },
+    {
+      "start": "3:52",
+      "end": "4:03",
+      "level": "big_chorus"
+    },
+    {
+      "start": "4:03",
+      "end": "4:05",
+      "level": "big_chorus"
+    },
+    {
+      "start": "4:05",
+      "end": "4:33",
+      "level": "low"
+    }
+  ]
+}
