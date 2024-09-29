@@ -29,26 +29,6 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-// DMXのshutter値をBPMに基づいて計算する関数
-function calculateShutterValueFromBPM(bpm: number): number {
-  // BPMから1ビートあたりの秒数を計算
-  const secondsPerBeat = 60 / bpm;
-
-  // DMXの更新レート（一般的に1秒間に44回）
-  const dmxUpdateRate = 44;
-
-  // 1ビートあたりのDMXフレーム数を計算
-  const framesPerBeat = secondsPerBeat * dmxUpdateRate;
-
-  // shutterの範囲（1-255）にマッピング
-  let shutterValue = Math.round((framesPerBeat / dmxUpdateRate) * 255);
-
-  // 値を1-255の範囲に制限
-  shutterValue = Math.max(1, Math.min(255, shutterValue));
-
-  return shutterValue;
-}
-
 //UE.5.1で一部の照明が、動作しなかったため一旦動作するもののみ動作させる
 function getFixtureChannels(fixture: Fixture): Channel[] {
   switch (fixture) {
@@ -77,22 +57,22 @@ function getFixtureChannels(fixture: Fixture): Channel[] {
         { number: 14, value: 255 },
         { number: 18, value: 128 },
         { number: 20, value: 183 },
-        { number: 22, value: 200 },
+        { number: 22, value: 255 },
         { number: 24, value: 255 },
         { number: 25, value: 255 },
         { number: 29, value: 128 },
         { number: 31, value: 183 },
-        { number: 33, value: 200 },
+        { number: 33, value: 255 },
         { number: 35, value: 255 },
         { number: 36, value: 255 },
         { number: 40, value: 128 },
         { number: 42, value: 183 },
-        { number: 44, value: 200 },
+        { number: 44, value: 255 },
         { number: 46, value: 255 },
         { number: 47, value: 255 },
         { number: 51, value: 128 },
         { number: 53, value: 183 },
-        { number: 55, value: 200 },
+        { number: 55, value: 255 },
       ];
     case "staticPatch":
       const static_patch: Channel[] = [];
@@ -108,6 +88,7 @@ function getFixtureChannels(fixture: Fixture): Channel[] {
         strobe_patch.push({ number: i, value: 255 });
       }
       return strobe_patch;
+
     //ここからuniverse2
     case "laser":
       const laser: Channel[] = [];

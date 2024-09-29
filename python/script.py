@@ -31,7 +31,7 @@ times = np.floor(librosa.times_like(sc, hop_length=hop_length, sr=sr))
 chorus_estimated_time = times[indices[0]]
 
 #RMSの閾値を設定してセクションを判別
-big_threshold = 0.88
+big_threshold = 0.9
 mid_threshold = 0.7
 
 #音量から照明効果の大/中/小を区分
@@ -46,7 +46,7 @@ def get_section_label(value):
 #セクションごとのラベルを割り当て（大、中、小）
 section_labels = [get_section_label(value) for value in rms]
 
-min_section_length = 4   #最小セクションの長さ（フレーム数）
+min_section_length = 2   #最小セクションの長さ（フレーム数）
 label_buffer = []
 last_created = 0
 
@@ -75,7 +75,7 @@ for i, (time, label) in enumerate(zip(times, section_labels)):
 
     #ラベルが変わった時
     if i > 0 and section_labels[i - 1] != label:
-        if(math.isclose(time, chorus_estimated_time, rel_tol=0.07 and time > chorus_estimated_time)): #大サビ付近のセクションの場合は、セクションをbig_chorusとする
+        if(time > chorus_estimated_time and (section_labels[i - 1] == "big" or  section_labels[i - 1] == "mid")):
             create_section(last_created, times[i - 1], "big_chorus")
             last_created = times[i - 1]
 

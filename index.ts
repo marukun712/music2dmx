@@ -110,12 +110,11 @@ async function startLightingControl() {
   resetDMX([1, 2]);
 
   let currentTime = 0;
-  await mpcApi.play();
-  await mpcApi.seek(0);
 
-  const interval = setInterval(() => {
+  const interval = setInterval(async () => {
+    currentTime = (await mpcApi.getPosition()).position / 1000;
+
     updateLighting(currentTime);
-    currentTime += 0.1;
 
     console.log(`Current time: ${currentTime} seconds`);
 
@@ -126,9 +125,12 @@ async function startLightingControl() {
       resetDMX([1, 2]);
       console.log("Lighting sequence completed");
     }
-  }, 100); // 1ミリ秒ごとに更新
+  }, 500);
+
+  await mpcApi.play();
+  await mpcApi.seek(0);
 }
 
 setTimeout(() => {
   startLightingControl();
-}, 10000);
+}, 3000);
