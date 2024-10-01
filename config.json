@@ -34,8 +34,11 @@
     }
   },
   "strobePatch": {
-    "startChannel": 301,
-    "channelCount": 12
+    "baseChannels": [301, 303, 305, 307, 309, 311],
+    "channels": {
+      "dimmer": 1,
+      "shutter": 2
+    }
   },
   "laser": {
     "startChannel": 301,

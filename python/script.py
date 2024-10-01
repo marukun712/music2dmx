@@ -4,7 +4,7 @@ import numpy as np
 import json
 
 #音声ファイルをロード
-y, sr = librosa.load("./python/music/mirage_voyage.wav")
+y, sr = librosa.load("./python/music/yumeiro_parade.wav")
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
 #特徴量算出用のパラメタ
@@ -31,7 +31,7 @@ chorus_estimated_time = times[indices[0]]
 
 #RMSの閾値を設定してセクションを判別
 big_threshold = 0.83
-mid_threshold = 0.71
+mid_threshold = 0.73
 
 #音量から照明効果の大/中/小を区分
 def get_section_label(value):

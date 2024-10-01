@@ -4,7 +4,6 @@ import { enableFixtures } from "./fixtures";
 
 const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
-let bpmInterval;
 let level: level = "low";
 
 export function resetDMX(universe: universe[]): void {
@@ -16,15 +15,16 @@ export function resetDMX(universe: universe[]): void {
 //bpmの間隔で繰り返し
 export function setupInterval(bpm: number, colorType: string) {
   const interval = (60 / bpm) * 1000;
+  let i = 0;
 
-  bpmInterval = setInterval(function () {
+  setInterval(function () {
     switch (level) {
       case "low":
         sendArtNetPacket(
           artNetIp,
           artNetPort,
           1,
-          enableFixtures(["spotlight", "staticPatch"])
+          enableFixtures(["spotlight", "staticPatch"], i, level)
         );
         break;
 
@@ -33,12 +33,11 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures([
-            "spotlight_tilt",
-            "staticPatch",
-            "strobePatch",
-            "LEDWash",
-          ])
+          enableFixtures(
+            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+            i,
+            level
+          )
         );
         break;
 
@@ -47,14 +46,18 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures([
-            "spotlight_tilt",
-            "staticPatch",
-            "strobePatch",
-            "LEDWash",
-          ])
+          enableFixtures(
+            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+            i,
+            level
+          )
         );
-        sendArtNetPacket(artNetIp, artNetPort, 2, enableFixtures(["pyro"]));
+        sendArtNetPacket(
+          artNetIp,
+          artNetPort,
+          2,
+          enableFixtures(["pyro"], i, level)
+        );
         break;
 
       case "big_chorus":
@@ -62,25 +65,25 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures([
-            "spotlight_tilt",
-            "staticPatch",
-            "strobePatch",
-            "LEDWash",
-          ])
+          enableFixtures(
+            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+            i,
+            level
+          )
         );
         sendArtNetPacket(
           artNetIp,
           artNetPort,
           2,
-          enableFixtures(["laser", "pyro", "fireworks"])
+          enableFixtures(["laser", "pyro", "fireworks"], i, level)
         );
         break;
 
       default:
         break;
     }
-  }, interval);
+    i++;
+  }, interval / 2);
 }
 
 export function setLevel(l: string) {

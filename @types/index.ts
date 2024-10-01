@@ -11,9 +11,9 @@ export type ChannelConfig = {
 
 export type FixtureName =
   | "spotlight"
-  | "spotlight_tilt"
   | "LEDWash"
   | "staticPatch"
+  | "strobePatch_shutter"
   | "strobePatch"
   | "laser"
   | "pyro"
