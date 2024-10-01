@@ -1,6 +1,6 @@
 {
   "spotlight": {
-    "baseChannels": [12, 23, 34, 45],
+    "baseChannels": [1, 12, 23, 34, 45, 56, 67, 78],
     "channels": {
       "color": 1,
       "dimmer": 2,

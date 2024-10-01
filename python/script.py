@@ -30,8 +30,8 @@ times = np.floor(librosa.times_like(sc, hop_length=hop_length, sr=sr))
 chorus_estimated_time = times[indices[0]]
 
 #RMSの閾値を設定してセクションを判別
-big_threshold = 0.9
-mid_threshold = 0.7
+big_threshold = 0.83
+mid_threshold = 0.71
 
 #音量から照明効果の大/中/小を区分
 def get_section_label(value):

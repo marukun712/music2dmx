@@ -1,16 +1,23 @@
-import { FixtureName, Channel, FixturesConfig } from "./@types";
+import { FixturesConfig, FixtureName, Channel } from "../@types";
 import fs from "fs";
+
+const redColor = [10, 70, 80];
+const blueColor = [0, 80, 120];
 
 //JSONデータの読み込みと型定義
 const channelConfig: FixturesConfig = JSON.parse(
   fs.readFileSync("./config.json", "utf8")
 );
 
-export function enableFixtures(fixtures: FixtureName[], colorType: string) {
+function getRandomValue(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+export function enableFixtures(fixtures: FixtureName[]) {
   let data = new Uint8Array(512);
 
   fixtures.forEach((fixture) => {
-    const channels = getFixtureChannels(fixture, colorType);
+    const channels = getFixtureChannels(fixture);
     data = setChannelValue(channels, data);
   });
 
@@ -25,23 +32,19 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
 }
 
 //Fixtureごとに有効化するチャンネルと値のobjectを返す
-function getFixtureChannels(
-  fixture: FixtureName,
-  colorType: string
-): Channel[] {
+function getFixtureChannels(fixture: FixtureName): Channel[] {
   switch (fixture) {
     case "spotlight":
     case "spotlight_tilt": {
       const channels: Channel[] = [];
       const config = channelConfig.spotlight;
       const tiltValue = fixture === "spotlight_tilt" ? 183 : 128;
-      const color = colorType === "red" ? 10 : 120;
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
           channels.push({
             number: baseChannel + config.channels.color - 1,
-            value: color,
+            value: 0,
           });
           channels.push({
             number: baseChannel + config.channels.dimmer - 1,
@@ -71,8 +74,11 @@ function getFixtureChannels(
     case "LEDWash": {
       const channels: Channel[] = [];
       const config = channelConfig.LEDWash;
-      const { r, g, b }: { r: number; g: number; b: number } =
-        colorType === "red" ? { r: 255, g: 0, b: 0 } : { r: 0, g: 0, b: 255 };
+      const { r, g, b }: { r: number; g: number; b: number } = {
+        r: getRandomValue(0, 255),
+        g: getRandomValue(0, 255),
+        b: getRandomValue(0, 255),
+      };
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
@@ -115,7 +121,44 @@ function getFixtureChannels(
       return channels;
     }
 
-    case "staticPatch":
+    case "staticPatch": {
+      const channels: Channel[] = [];
+      const config = channelConfig.staticPatch;
+      const { r, g, b }: { r: number; g: number; b: number } = {
+        r: getRandomValue(0, 255),
+        g: getRandomValue(0, 255),
+        b: getRandomValue(0, 255),
+      };
+
+      if (config.baseChannels && config.channels) {
+        config.baseChannels.forEach((baseChannel) => {
+          channels.push({
+            number: baseChannel + config.channels.r - 1,
+            value: r,
+          });
+          channels.push({
+            number: baseChannel + config.channels.g - 1,
+            value: g,
+          });
+          channels.push({
+            number: baseChannel + config.channels.b - 1,
+            value: b,
+          });
+          channels.push({
+            number: baseChannel + config.channels.dimmer - 1,
+            value: 255,
+          });
+
+          channels.push({
+            number: baseChannel + config.channels.shutter - 1,
+            value: 255,
+          });
+        });
+      }
+
+      return channels;
+    }
+
     case "strobePatch":
     case "laser":
     case "pyro":
