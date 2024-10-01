@@ -1,0 +1,52 @@
+{
+  "spotlight": {
+    "baseChannels": [12, 23, 34, 45],
+    "channels": {
+      "color": 1,
+      "dimmer": 2,
+      "shutter": 3,
+      "pan": 7,
+      "tilt": 9,
+      "zoom": 11
+    }
+  },
+  "staticPatch": {
+    "baseChannels": [201, 206, 211, 216, 221, 226, 231, 236, 241],
+    "channels": {
+      "r": 1,
+      "g": 2,
+      "b": 3,
+      "dimmer": 4,
+      "shutter": 5
+    }
+  },
+  "LEDWash": {
+    "baseChannels": [401, 409],
+    "channels": {
+      "r": 1,
+      "g": 2,
+      "b": 3,
+      "pan": 4,
+      "tilt": 5,
+      "dimmer": 6,
+      "shutter": 7,
+      "zoom": 8
+    }
+  },
+  "strobePatch": {
+    "startChannel": 301,
+    "channelCount": 12
+  },
+  "laser": {
+    "startChannel": 301,
+    "channelCount": 6
+  },
+  "pyro": {
+    "startChannel": 201,
+    "channelCount": 4
+  },
+  "fireworks": {
+    "startChannel": 401,
+    "channelCount": 3
+  }
+}

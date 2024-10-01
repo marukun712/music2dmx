@@ -1,7 +1,6 @@
 import librosa
 import librosa.display
 import numpy as np
-import math
 import json
 
 #音声ファイルをロード
@@ -46,7 +45,7 @@ def get_section_label(value):
 #セクションごとのラベルを割り当て（大、中、小）
 section_labels = [get_section_label(value) for value in rms]
 
-min_section_length = 2   #最小セクションの長さ（フレーム数）
+min_section_length = 4   #最小セクションの長さ（フレーム数）
 label_buffer = []
 last_created = 0
 
@@ -69,7 +68,6 @@ def create_section(start, end, label):
 
 #セクションのラベルと対応する時間を処理
 for i, (time, label) in enumerate(zip(times, section_labels)):
-    print(label)
     #ラベルをバッファに保存
     label_buffer.append(label)
 

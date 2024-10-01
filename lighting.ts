@@ -1,21 +1,16 @@
-type Channel = {
-  number: number;
-  value: number;
-};
-type Fixture =
-  | "spotlight"
-  | "spotlight_tilt"
-  | "staticPatch"
-  | "strobePatch"
-  | "laser"
-  | "pyro"
-  | "fireworks";
+import { FixtureName, Channel, FixturesConfig } from "./@types";
+import fs from "fs";
 
-export function addFixtures(fixtures: Fixture[]) {
+//JSONデータの読み込みと型定義
+const channelConfig: FixturesConfig = JSON.parse(
+  fs.readFileSync("./config.json", "utf8")
+);
+
+export function enableFixtures(fixtures: FixtureName[], colorType: string) {
   let data = new Uint8Array(512);
 
   fixtures.forEach((fixture) => {
-    const channels = getFixtureChannels(fixture);
+    const channels = getFixtureChannels(fixture, colorType);
     data = setChannelValue(channels, data);
   });
 
@@ -29,88 +24,124 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-//UE.5.1で一部の照明が、動作しなかったため一旦動作するもののみ動作させる
-function getFixtureChannels(fixture: Fixture): Channel[] {
+//Fixtureごとに有効化するチャンネルと値のobjectを返す
+function getFixtureChannels(
+  fixture: FixtureName,
+  colorType: string
+): Channel[] {
   switch (fixture) {
     case "spotlight":
-      return [
-        { number: 13, value: 255 },
-        { number: 14, value: 255 },
-        { number: 20, value: 128 },
-        { number: 22, value: 255 },
-        { number: 24, value: 255 },
-        { number: 25, value: 255 },
-        { number: 31, value: 128 },
-        { number: 33, value: 255 },
-        { number: 35, value: 255 },
-        { number: 36, value: 255 },
-        { number: 42, value: 128 },
-        { number: 44, value: 255 },
-        { number: 46, value: 255 },
-        { number: 47, value: 255 },
-        { number: 53, value: 128 },
-        { number: 55, value: 255 },
-      ];
-    case "spotlight_tilt":
-      return [
-        { number: 13, value: 255 },
-        { number: 14, value: 255 },
-        { number: 18, value: 128 },
-        { number: 20, value: 183 },
-        { number: 22, value: 255 },
-        { number: 24, value: 255 },
-        { number: 25, value: 255 },
-        { number: 29, value: 128 },
-        { number: 31, value: 183 },
-        { number: 33, value: 255 },
-        { number: 35, value: 255 },
-        { number: 36, value: 255 },
-        { number: 40, value: 128 },
-        { number: 42, value: 183 },
-        { number: 44, value: 255 },
-        { number: 46, value: 255 },
-        { number: 47, value: 255 },
-        { number: 51, value: 128 },
-        { number: 53, value: 183 },
-        { number: 55, value: 255 },
-      ];
+    case "spotlight_tilt": {
+      const channels: Channel[] = [];
+      const config = channelConfig.spotlight;
+      const tiltValue = fixture === "spotlight_tilt" ? 183 : 128;
+      const color = colorType === "red" ? 10 : 120;
+
+      if (config.baseChannels && config.channels) {
+        config.baseChannels.forEach((baseChannel) => {
+          channels.push({
+            number: baseChannel + config.channels.color - 1,
+            value: color,
+          });
+          channels.push({
+            number: baseChannel + config.channels.dimmer - 1,
+            value: 255,
+          });
+          channels.push({
+            number: baseChannel + config.channels.shutter - 1,
+            value: 255,
+          });
+          channels.push({
+            number: baseChannel + config.channels.pan - 1,
+            value: 128,
+          });
+          channels.push({
+            number: baseChannel + config.channels.tilt - 1,
+            value: tiltValue,
+          });
+          channels.push({
+            number: baseChannel + config.channels.zoom - 1,
+            value: 255,
+          });
+        });
+      }
+
+      return channels;
+    }
+    case "LEDWash": {
+      const channels: Channel[] = [];
+      const config = channelConfig.LEDWash;
+      const { r, g, b }: { r: number; g: number; b: number } =
+        colorType === "red" ? { r: 255, g: 0, b: 0 } : { r: 0, g: 0, b: 255 };
+
+      if (config.baseChannels && config.channels) {
+        config.baseChannels.forEach((baseChannel) => {
+          channels.push({
+            number: baseChannel + config.channels.r - 1,
+            value: r,
+          });
+          channels.push({
+            number: baseChannel + config.channels.g - 1,
+            value: g,
+          });
+          channels.push({
+            number: baseChannel + config.channels.b - 1,
+            value: b,
+          });
+          channels.push({
+            number: baseChannel + config.channels.pan - 1,
+            value: 128,
+          });
+          channels.push({
+            number: baseChannel + config.channels.tilt - 1,
+            value: 128,
+          });
+          channels.push({
+            number: baseChannel + config.channels.dimmer - 1,
+            value: 255,
+          });
+
+          channels.push({
+            number: baseChannel + config.channels.shutter - 1,
+            value: 255,
+          });
+          channels.push({
+            number: baseChannel + config.channels.zoom - 1,
+            value: 255,
+          });
+        });
+      }
+
+      return channels;
+    }
+
     case "staticPatch":
-      const static_patch: Channel[] = [];
-
-      for (let i = 201; i <= 245; i++) {
-        static_patch.push({ number: i, value: 255 });
-      }
-      return static_patch;
     case "strobePatch":
-      const strobe_patch: Channel[] = [];
-
-      for (let i = 301; i <= 312; i++) {
-        strobe_patch.push({ number: i, value: 255 });
-      }
-      return strobe_patch;
-
-    //ここからuniverse2
     case "laser":
-      const laser: Channel[] = [];
-
-      for (let i = 301; i <= 306; i++) {
-        laser.push({ number: i, value: 255 });
-      }
-      return laser;
     case "pyro":
-      const pyro: Channel[] = [];
+    case "fireworks": {
+      const config = channelConfig[fixture];
+      const channels: Channel[] = [];
 
-      for (let i = 201; i <= 204; i++) {
-        pyro.push({ number: i, value: 255 });
+      if (config.startChannel && config.channelCount) {
+        for (
+          let i = config.startChannel;
+          i < config.startChannel + config.channelCount;
+          i++
+        ) {
+          channels.push({ number: i, value: 255 });
+        }
+      } else if (config.baseChannels && config.channels) {
+        config.baseChannels.forEach((baseChannel) => {
+          Object.values(config.channels).forEach((offset, index) => {
+            channels.push({ number: baseChannel + offset - 1, value: 255 });
+          });
+        });
       }
-      return pyro;
-    case "fireworks":
-      const fireworks: Channel[] = [];
 
-      for (let i = 401; i <= 403; i++) {
-        fireworks.push({ number: i, value: 255 });
-      }
-      return fireworks;
+      return channels;
+    }
+
     default:
       return [];
   }

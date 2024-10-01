@@ -1,27 +1,14 @@
 import { sendArtNetPacket } from "./art-net";
 import fs from "fs";
-import { addFixtures } from "./lighting";
+import { enableFixtures } from "./lighting";
 import { MpcControl } from "mpc-hc-control";
+import { level, LightingData, universe } from "./@types";
 
 const mpcApi = new MpcControl("100.73.74.135", 13579);
 
 const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
-
-type universe = 1 | 2;
-
-type level = "low" | "mid" | "big" | "big_chorus";
-
-interface Section {
-  start: string;
-  end: string;
-  level: level;
-}
-
-interface LightingData {
-  bpm: number;
-  sections: Section[];
-}
+const colorType = "blue";
 
 let lastLevel: level;
 
@@ -30,7 +17,7 @@ function timeToSeconds(timeString: string): number {
   return minutes * 60 + seconds;
 }
 
-// JSONデータの読み込みと型定義
+//JSONデータの読み込みと型定義
 const lightingData: LightingData = JSON.parse(
   fs.readFileSync("./python/music_sections.json", "utf8")
 );
@@ -52,7 +39,7 @@ function updateLighting(currentTime: number): void {
           artNetIp,
           artNetPort,
           1,
-          addFixtures(["spotlight", "staticPatch"])
+          enableFixtures(["spotlight", "staticPatch"], colorType)
         );
         break;
 
@@ -63,7 +50,10 @@ function updateLighting(currentTime: number): void {
           artNetIp,
           artNetPort,
           1,
-          addFixtures(["spotlight_tilt", "staticPatch", "strobePatch"])
+          enableFixtures(
+            ["spotlight_tilt", "staticPatch", "strobePatch", "LEDWash"],
+            colorType
+          )
         );
         break;
 
@@ -72,9 +62,17 @@ function updateLighting(currentTime: number): void {
           artNetIp,
           artNetPort,
           1,
-          addFixtures(["spotlight_tilt", "staticPatch", "strobePatch"])
+          enableFixtures(
+            ["spotlight_tilt", "staticPatch", "strobePatch", "LEDWash"],
+            colorType
+          )
         );
-        sendArtNetPacket(artNetIp, artNetPort, 2, addFixtures(["pyro"]));
+        sendArtNetPacket(
+          artNetIp,
+          artNetPort,
+          2,
+          enableFixtures(["pyro"], colorType)
+        );
         break;
 
       case "big_chorus":
@@ -84,13 +82,16 @@ function updateLighting(currentTime: number): void {
           artNetIp,
           artNetPort,
           1,
-          addFixtures(["spotlight_tilt", "staticPatch", "strobePatch"])
+          enableFixtures(
+            ["spotlight_tilt", "staticPatch", "strobePatch", "LEDWash"],
+            colorType
+          )
         );
         sendArtNetPacket(
           artNetIp,
           artNetPort,
           2,
-          addFixtures(["laser", "pyro", "fireworks"])
+          enableFixtures(["laser", "pyro", "fireworks"], colorType)
         );
         break;
 
@@ -118,14 +119,14 @@ async function startLightingControl() {
 
     console.log(`Current time: ${currentTime} seconds`);
 
-    // 最後のセクション終了時の処理
+    //最後のセクション終了時の処理
     const lastSection = lightingData.sections[lightingData.sections.length - 1];
     if (currentTime > timeToSeconds(lastSection.end)) {
       clearInterval(interval);
       resetDMX([1, 2]);
       console.log("Lighting sequence completed");
     }
-  }, 500);
+  }, 200);
 
   await mpcApi.play();
   await mpcApi.seek(0);
