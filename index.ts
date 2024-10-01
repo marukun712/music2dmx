@@ -5,8 +5,6 @@ import { setLevel, resetDMX, setupInterval } from "./src/dmx";
 
 const mpcApi = new MpcControl("100.73.74.135", 13579);
 
-const colorType = "blue";
-
 let lastLevel: level;
 
 function timeToSeconds(timeString: string): number {
@@ -34,7 +32,7 @@ function updateLighting(currentTime: number): void {
 
 async function startLightingControl() {
   resetDMX([1, 2]);
-  setupInterval(lightingData.bpm, colorType);
+  setupInterval(lightingData.bpm);
 
   let currentTime = 0;
 

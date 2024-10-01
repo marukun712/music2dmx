@@ -2,12 +2,12 @@ import { FixturesConfig, FixtureName, Channel } from "../@types";
 import fs from "fs";
 
 const colorPalettes = [
-  [255, 0, 0], // Red
-  [0, 255, 0], // Green
-  [0, 0, 255], // Blue
-  [255, 255, 0], // Yellow
-  [255, 0, 255], // Magenta
-  [0, 255, 255], // Cyan
+  [255, 0, 0], //Red
+  [0, 255, 0], //Green
+  [0, 0, 255], //Blue
+  [255, 255, 0], //Yellow
+  [255, 0, 255], //Magenta
+  [0, 255, 255], //Cyan
 ];
 //JSONデータの読み込みと型定義
 const channelConfig: FixturesConfig = JSON.parse(
@@ -40,7 +40,8 @@ function getRandomPanTiltValue(): { pan: number; tilt: number } {
   };
 }
 
-export function enableFixtures(
+//levelとfixtureNameからDMXのデータを作成する
+export function createDMXData(
   fixtures: FixtureName[],
   i: number,
   level: string
@@ -62,18 +63,21 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-//Fixtureごとに有効化するチャンネルと値のobjectを返す
+//levelから点灯するfixtureや値をセットする
 function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
   switch (fixture) {
     case "spotlight": {
       const channels: Channel[] = [];
       const config = channelConfig.spotlight;
+
+      //levelがlow以外の時、BPMに合わせて点滅させる
       const { dimmer, shutter } =
         i % 4 === 0 &&
         (level === "mid" || level === "big" || level === "big_chorus")
           ? { dimmer: 0, shutter: 0 }
           : { dimmer: 255, shutter: 255 };
 
+      //levelがlow以外の時、手前方向に傾ける
       const tiltValue =
         level === "mid" || level === "big" || level === "big_chorus"
           ? 183
@@ -81,35 +85,38 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
-          channels.push({
-            number: baseChannel + config.channels.color - 1,
-            value: 0,
-          });
-          channels.push({
-            number: baseChannel + config.channels.dimmer - 1,
-            value: dimmer,
-          });
-          channels.push({
-            number: baseChannel + config.channels.shutter - 1,
-            value: shutter,
-          });
-          channels.push({
-            number: baseChannel + config.channels.pan - 1,
-            value: 128,
-          });
-          channels.push({
-            number: baseChannel + config.channels.tilt - 1,
-            value: tiltValue,
-          });
-          channels.push({
-            number: baseChannel + config.channels.zoom - 1,
-            value: 255,
-          });
+          channels.push(
+            {
+              number: baseChannel + config.channels.color - 1,
+              value: 0,
+            },
+            {
+              number: baseChannel + config.channels.dimmer - 1,
+              value: dimmer,
+            },
+            {
+              number: baseChannel + config.channels.shutter - 1,
+              value: shutter,
+            },
+            {
+              number: baseChannel + config.channels.pan - 1,
+              value: 128,
+            },
+            {
+              number: baseChannel + config.channels.tilt - 1,
+              value: tiltValue,
+            },
+            {
+              number: baseChannel + config.channels.zoom - 1,
+              value: 255,
+            }
+          );
         });
       }
 
       return channels;
     }
+
     case "LEDWash": {
       const channels: Channel[] = [];
       const config = channelConfig.LEDWash;
@@ -118,39 +125,25 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
-          channels.push({
-            number: baseChannel + config.channels.r - 1,
-            value: getPulseValue(color.r),
-          });
-          channels.push({
-            number: baseChannel + config.channels.g - 1,
-            value: getPulseValue(color.g),
-          });
-          channels.push({
-            number: baseChannel + config.channels.b - 1,
-            value: getPulseValue(color.b),
-          });
-          channels.push({
-            number: baseChannel + config.channels.pan - 1,
-            value: pan,
-          });
-          channels.push({
-            number: baseChannel + config.channels.tilt - 1,
-            value: tilt,
-          });
-          channels.push({
-            number: baseChannel + config.channels.dimmer - 1,
-            value: 255,
-          });
-
-          channels.push({
-            number: baseChannel + config.channels.shutter - 1,
-            value: 255,
-          });
-          channels.push({
-            number: baseChannel + config.channels.zoom - 1,
-            value: 255,
-          });
+          channels.push(
+            {
+              number: baseChannel + config.channels.r - 1,
+              value: getPulseValue(color.r),
+            },
+            {
+              number: baseChannel + config.channels.g - 1,
+              value: getPulseValue(color.g),
+            },
+            {
+              number: baseChannel + config.channels.b - 1,
+              value: getPulseValue(color.b),
+            },
+            { number: baseChannel + config.channels.pan - 1, value: pan },
+            { number: baseChannel + config.channels.tilt - 1, value: tilt },
+            { number: baseChannel + config.channels.dimmer - 1, value: 255 },
+            { number: baseChannel + config.channels.shutter - 1, value: 255 },
+            { number: baseChannel + config.channels.zoom - 1, value: 255 }
+          );
         });
       }
 
@@ -164,27 +157,22 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
-          channels.push({
-            number: baseChannel + config.channels.r - 1,
-            value: getPulseValue(color.r),
-          });
-          channels.push({
-            number: baseChannel + config.channels.g - 1,
-            value: getPulseValue(color.g),
-          });
-          channels.push({
-            number: baseChannel + config.channels.b - 1,
-            value: getPulseValue(color.b),
-          });
-          channels.push({
-            number: baseChannel + config.channels.dimmer - 1,
-            value: 255,
-          });
-
-          channels.push({
-            number: baseChannel + config.channels.shutter - 1,
-            value: 255,
-          });
+          channels.push(
+            {
+              number: baseChannel + config.channels.r - 1,
+              value: getPulseValue(color.r),
+            },
+            {
+              number: baseChannel + config.channels.g - 1,
+              value: getPulseValue(color.g),
+            },
+            {
+              number: baseChannel + config.channels.b - 1,
+              value: getPulseValue(color.b),
+            },
+            { number: baseChannel + config.channels.dimmer - 1, value: 255 },
+            { number: baseChannel + config.channels.shutter - 1, value: 255 }
+          );
         });
       }
 
@@ -194,21 +182,25 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
     case "strobePatch": {
       const channels: Channel[] = [];
       const config = channelConfig.strobePatch;
+
+      //levelがbig以上の時、BPMに合わせて点滅させる
       const { dimmer, shutter } =
         i % 2 === 0 && (level === "big" || level === "big_chorus")
-          ? { dimmer: 128, shutter: 255 }
+          ? { dimmer: 100, shutter: 255 }
           : { dimmer: 255, shutter: 255 };
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
-          channels.push({
-            number: baseChannel + config.channels.dimmer - 1,
-            value: dimmer,
-          });
-          channels.push({
-            number: baseChannel + config.channels.shutter - 1,
-            value: shutter,
-          });
+          channels.push(
+            {
+              number: baseChannel + config.channels.dimmer - 1,
+              value: dimmer,
+            },
+            {
+              number: baseChannel + config.channels.shutter - 1,
+              value: shutter,
+            }
+          );
         });
       }
 
@@ -229,14 +221,7 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
         ) {
           channels.push({ number: i, value: 255 });
         }
-      } else if (config.baseChannels && config.channels) {
-        config.baseChannels.forEach((baseChannel) => {
-          Object.values(config.channels).forEach((offset, index) => {
-            channels.push({ number: baseChannel + offset - 1, value: 255 });
-          });
-        });
       }
-
       return channels;
     }
 

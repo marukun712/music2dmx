@@ -1,6 +1,6 @@
 import { level, universe } from "../@types";
 import { sendArtNetPacket } from "./art-net";
-import { enableFixtures } from "./fixtures";
+import { createDMXData } from "./fixtures";
 
 const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
@@ -13,7 +13,7 @@ export function resetDMX(universe: universe[]): void {
 }
 
 //bpmの間隔で繰り返し
-export function setupInterval(bpm: number, colorType: string) {
+export function setupInterval(bpm: number) {
   const interval = (60 / bpm) * 1000;
   let i = 0;
 
@@ -24,7 +24,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures(["spotlight", "staticPatch"], i, level)
+          createDMXData(["spotlight", "staticPatch"], i, level)
         );
         break;
 
@@ -33,7 +33,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures(
+          createDMXData(
             ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
             i,
             level
@@ -46,7 +46,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures(
+          createDMXData(
             ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
             i,
             level
@@ -56,7 +56,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           2,
-          enableFixtures(["pyro"], i, level)
+          createDMXData(["pyro"], i, level)
         );
         break;
 
@@ -65,7 +65,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           1,
-          enableFixtures(
+          createDMXData(
             ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
             i,
             level
@@ -75,7 +75,7 @@ export function setupInterval(bpm: number, colorType: string) {
           artNetIp,
           artNetPort,
           2,
-          enableFixtures(["laser", "pyro", "fireworks"], i, level)
+          createDMXData(["laser", "pyro", "fireworks"], i, level)
         );
         break;
 
