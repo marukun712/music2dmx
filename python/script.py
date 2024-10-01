@@ -31,6 +31,8 @@ chorus_estimated_time = times[indices[0]]
 
 #RMSの閾値を設定してセクションを判別
 big_threshold = 0.83
+#big_threshold = 0.915
+
 mid_threshold = 0.73
 
 #音量から照明効果の大/中/小を区分

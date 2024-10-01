@@ -153,7 +153,8 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
     case "staticPatch": {
       const channels: Channel[] = [];
       const config = channelConfig.staticPatch;
-      const color = getRandomColor();
+      const color =
+        level === "low" ? { r: 255, g: 255, b: 255 } : getRandomColor();
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
