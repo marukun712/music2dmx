@@ -1,9 +1,10 @@
-import { level, universe } from "../@types";
+import { level, universe } from "../../@types";
 import { sendArtNetPacket } from "./art-net";
 import { createDMXData } from "./fixtures";
 
 const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
+
 let level: level = "low";
 
 export function resetDMX(universe: universe[]): void {
@@ -13,18 +14,18 @@ export function resetDMX(universe: universe[]): void {
 }
 
 //bpmの間隔で繰り返し
-export function setupInterval(bpm: number) {
+export function setupBPMInterval(bpm: number) {
   const interval = (60 / bpm) * 1000;
   let i = 0;
 
-  setInterval(function () {
+  return setInterval(function () {
     switch (level) {
       case "low":
         sendArtNetPacket(
           artNetIp,
           artNetPort,
           1,
-          createDMXData(["spotlight", "staticPatch"], i, level)
+          createDMXData(["spotlight", "staticPatch", "strobePatch"], i, level)
         );
         break;
 

@@ -1,7 +1,7 @@
 import fs from "fs";
 import { MpcControl } from "mpc-hc-control";
 import { level, LightingData } from "./@types";
-import { setLevel, resetDMX, setupInterval } from "./src/dmx";
+import { setLevel, resetDMX, setupBPMInterval } from "./utils/dmx/dmx";
 
 const mpcApi = new MpcControl("100.73.74.135", 13579);
 
@@ -32,7 +32,7 @@ function updateLighting(currentTime: number): void {
 
 async function startLightingControl() {
   resetDMX([1, 2]);
-  setupInterval(lightingData.bpm);
+  const bpmInterval = setupBPMInterval(lightingData.bpm);
 
   let currentTime = 0;
 
@@ -45,10 +45,11 @@ async function startLightingControl() {
     const lastSection = lightingData.sections[lightingData.sections.length - 1];
     if (currentTime > timeToSeconds(lastSection.end)) {
       clearInterval(interval);
+      clearInterval(bpmInterval);
       resetDMX([1, 2]);
       console.log("Lighting sequence completed");
     }
-  }, 200);
+  }, 500);
 
   await mpcApi.play();
   await mpcApi.seek(0);

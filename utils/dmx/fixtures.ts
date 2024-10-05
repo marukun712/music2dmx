@@ -1,4 +1,4 @@
-import { FixturesConfig, FixtureName, Channel } from "../@types";
+import { FixturesConfig, FixtureName, Channel } from "../../@types";
 import fs from "fs";
 
 const colorPalettes = [
@@ -9,6 +9,7 @@ const colorPalettes = [
   [255, 0, 255], //Magenta
   [0, 255, 255], //Cyan
 ];
+
 //JSONデータの読み込みと型定義
 const channelConfig: FixturesConfig = JSON.parse(
   fs.readFileSync("./config.json", "utf8")
@@ -72,16 +73,13 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
 
       //levelがlow以外の時、BPMに合わせて点滅させる
       const { dimmer, shutter } =
-        i % 4 === 0 &&
-        (level === "mid" || level === "big" || level === "big_chorus")
-          ? { dimmer: 0, shutter: 0 }
-          : { dimmer: 255, shutter: 255 };
+        i % 4 === 0 ? { dimmer: 0, shutter: 0 } : { dimmer: 255, shutter: 255 };
 
       //levelがlow以外の時、手前方向に傾ける
       const tiltValue =
         level === "mid" || level === "big" || level === "big_chorus"
           ? 183
-          : 128;
+          : 150;
 
       if (config.baseChannels && config.channels) {
         config.baseChannels.forEach((baseChannel) => {
@@ -188,6 +186,8 @@ function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
       const { dimmer, shutter } =
         i % 2 === 0 && (level === "big" || level === "big_chorus")
           ? { dimmer: 100, shutter: 255 }
+          : level === "low"
+          ? { dimmer: 200, shutter: 255 }
           : { dimmer: 255, shutter: 255 };
 
       if (config.baseChannels && config.channels) {

@@ -4,7 +4,7 @@ import numpy as np
 import json
 
 #音声ファイルをロード
-y, sr = librosa.load("./python/music/yumeiro_parade.wav")
+y, sr = librosa.load("./python/music/yumezora.mp3")
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
 #特徴量算出用のパラメタ
