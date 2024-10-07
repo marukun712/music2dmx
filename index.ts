@@ -2,6 +2,7 @@ import fs from "fs";
 import { MpcControl } from "mpc-hc-control";
 import { level, LightingData } from "./@types";
 import { setLevel, resetDMX, setupBPMInterval } from "./utils/dmx/dmx";
+import { detectMusicSection } from "./utils/dmx/detectMusicSection";
 
 const mpcApi = new MpcControl("100.73.74.135", 13579);
 
@@ -13,8 +14,10 @@ function timeToSeconds(timeString: string): number {
 }
 
 //JSONデータの読み込みと型定義
-const lightingData: LightingData = JSON.parse(
-  fs.readFileSync("./python/music_sections.json", "utf8")
+const lightingData: LightingData = await detectMusicSection(
+  "./python/music/yumeiro_parade.wav",
+  "0.83",
+  "0.73"
 );
 
 function updateLighting(currentTime: number): void {

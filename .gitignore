@@ -2,3 +2,4 @@ python/.venv/
 python/music/
 python/music_sections.json
 node_modules/
+python/temp/
