@@ -1,5 +1,4 @@
 import { FixturesConfig, FixtureName, Channel } from "../../@types";
-import fs from "fs";
 
 const colorPalettes = [
   [255, 0, 0], //Red
@@ -11,9 +10,7 @@ const colorPalettes = [
 ];
 
 //JSONデータの読み込みと型定義
-const channelConfig: FixturesConfig = JSON.parse(
-  fs.readFileSync("./config.json", "utf8")
-);
+const channelConfig: FixturesConfig = await Bun.file("./config.json").json();
 
 function getRandomValue(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);

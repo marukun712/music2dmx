@@ -1,11 +1,16 @@
-import { level, universe } from "../../@types";
-import { sendArtNetPacket } from "./art-net";
+import { level, universe, LightingData } from "../../@types";
+import { sendArtNetPacket } from "./ArtNet";
 import { createDMXData } from "./fixtures";
 
 const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
 
 let level: level = "low";
+
+export function timeToSeconds(timeString: string): number {
+  const [minutes, seconds] = timeString.split(":").map(Number);
+  return minutes * 60 + seconds;
+}
 
 export function resetDMX(universe: universe[]): void {
   universe.map((u) => {
@@ -14,8 +19,9 @@ export function resetDMX(universe: universe[]): void {
 }
 
 //bpmの間隔で繰り返し
-export function setupBPMInterval(bpm: number) {
-  const interval = (60 / bpm) * 1000;
+export function setupBPMInterval(lightingData: LightingData) {
+  const interval = (60 / lightingData.bpm) * 1000;
+
   let i = 0;
 
   return setInterval(function () {
@@ -87,31 +93,22 @@ export function setupBPMInterval(bpm: number) {
   }, interval / 2);
 }
 
-export function setLevel(l: string) {
-  switch (l) {
-    case "low":
+export function updateLevel(
+  currentTime: number,
+  lightingData: LightingData
+): void {
+  if (lightingData) {
+    const currentSection = lightingData.sections.find(
+      (section) =>
+        timeToSeconds(section.start) <= currentTime &&
+        timeToSeconds(section.end) > currentTime
+    );
+
+    if (currentSection && currentSection.level !== level) {
       resetDMX([2]);
-      level = "low";
-      break;
 
-    case "mid":
-      resetDMX([2]);
-      level = "mid";
-
-      break;
-
-    case "big":
-      level = "big";
-
-      break;
-
-    case "big_chorus":
-      resetDMX([2]);
-      level = "big_chorus";
-
-      break;
-
-    default:
-      break;
+      level = currentSection.level;
+      console.log(level);
+    }
   }
 }

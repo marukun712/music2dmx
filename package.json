@@ -7,8 +7,7 @@
     "@types/bun": "^1.1.10",
     "@types/node": "^22.5.5",
     "dgram": "^1.0.1",
-    "fs": "^0.0.1-security",
-    "mpc-hc-control": "^1.0.2",
+    "vlc-client": "^1.1.1",
     "webview-bun": "^2.3.0"
   },
   "devDependencies": {
