@@ -1,114 +1,118 @@
 import { level, universe, LightingData } from "../../@types";
 import { sendArtNetPacket } from "./ArtNet";
 import { createDMXData } from "./fixtures";
+import { timeToSeconds } from "../utils";
 
-const artNetIp: string = "100.73.74.135";
-const artNetPort: number = 6454;
+export class DMXController {
+  private level: level = "low";
+  private artNetIp: string;
+  private artNetPort: number;
 
-let level: level = "low";
+  constructor(artNetIp: string, artNetPort: number) {
+    this.artNetIp = artNetIp;
+    this.artNetPort = artNetPort;
+  }
 
-export function timeToSeconds(timeString: string): number {
-  const [minutes, seconds] = timeString.split(":").map(Number);
-  return minutes * 60 + seconds;
-}
+  // DMXのリセットを行う関数
+  public resetDMX(universes: universe[]): void {
+    universes.map((u) => {
+      sendArtNetPacket(this.artNetIp, this.artNetPort, u, new Uint8Array(512)); // 空のデータを送信
+    });
+  }
 
-export function resetDMX(universe: universe[]): void {
-  universe.map((u) => {
-    sendArtNetPacket(artNetIp, artNetPort, u, new Uint8Array(512)); // 空のデータを送信
-  });
-}
+  // BPMの間隔でDMXデータを送信する関数
+  public setupBPMInterval(lightingData: LightingData) {
+    const interval = (60 / lightingData.bpm) * 1000;
+    let i = 0;
 
-//bpmの間隔で繰り返し
-export function setupBPMInterval(lightingData: LightingData) {
-  const interval = (60 / lightingData.bpm) * 1000;
+    return setInterval(() => {
+      switch (this.level) {
+        case "low":
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            1,
+            createDMXData(
+              ["spotlight", "staticPatch", "strobePatch"],
+              i,
+              this.level
+            )
+          );
+          break;
 
-  let i = 0;
+        case "mid":
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            1,
+            createDMXData(
+              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+              i,
+              this.level
+            )
+          );
+          break;
 
-  return setInterval(function () {
-    switch (level) {
-      case "low":
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          1,
-          createDMXData(["spotlight", "staticPatch", "strobePatch"], i, level)
-        );
-        break;
+        case "big":
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            1,
+            createDMXData(
+              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+              i,
+              this.level
+            )
+          );
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            2,
+            createDMXData(["pyro"], i, this.level)
+          );
+          break;
 
-      case "mid":
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          1,
-          createDMXData(
-            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-            i,
-            level
-          )
-        );
-        break;
+        case "big_chorus":
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            1,
+            createDMXData(
+              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
+              i,
+              this.level
+            )
+          );
+          sendArtNetPacket(
+            this.artNetIp,
+            this.artNetPort,
+            2,
+            createDMXData(["laser", "pyro", "fireworks"], i, this.level)
+          );
+          break;
 
-      case "big":
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          1,
-          createDMXData(
-            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-            i,
-            level
-          )
-        );
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          2,
-          createDMXData(["pyro"], i, level)
-        );
-        break;
+        default:
+          break;
+      }
+      i++;
+    }, interval / 2);
+  }
 
-      case "big_chorus":
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          1,
-          createDMXData(
-            ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-            i,
-            level
-          )
-        );
-        sendArtNetPacket(
-          artNetIp,
-          artNetPort,
-          2,
-          createDMXData(["laser", "pyro", "fireworks"], i, level)
-        );
-        break;
+  // 現在の時間に応じてレベルを更新する関数
+  public updateLevel(currentTime: number, lightingData: LightingData): void {
+    if (lightingData) {
+      const currentSection = lightingData.sections.find(
+        (section) =>
+          timeToSeconds(section.start) <= currentTime &&
+          timeToSeconds(section.end) > currentTime
+      );
 
-      default:
-        break;
-    }
-    i++;
-  }, interval / 2);
-}
+      if (currentSection && currentSection.level !== this.level) {
+        this.resetDMX([2]);
 
-export function updateLevel(
-  currentTime: number,
-  lightingData: LightingData
-): void {
-  if (lightingData) {
-    const currentSection = lightingData.sections.find(
-      (section) =>
-        timeToSeconds(section.start) <= currentTime &&
-        timeToSeconds(section.end) > currentTime
-    );
-
-    if (currentSection && currentSection.level !== level) {
-      resetDMX([2]);
-
-      level = currentSection.level;
-      console.log(level);
+        this.level = currentSection.level;
+        console.log(this.level);
+      }
     }
   }
 }

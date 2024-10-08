@@ -1,11 +1,7 @@
 import * as VLC from "vlc-client";
-import {
-  resetDMX,
-  setupBPMInterval,
-  updateLevel,
-} from "./utils/dmx/dmxControl";
 import { detectMusicSection } from "./utils/dmx/detectMusicSection";
-import { timeToSeconds } from "./utils/dmx/dmxControl";
+import { timeToSeconds } from "./utils/utils";
+import { DMXController } from "./utils/dmx/dmxControl";
 
 const vlc = new VLC.Client({
   ip: "100.73.74.135",
@@ -13,28 +9,33 @@ const vlc = new VLC.Client({
   password: process.env.VLC_PASSWORD!,
 });
 
+const artNetIp: string = "100.73.74.135";
+const artNetPort: number = 6454;
+
+const controller = new DMXController(artNetIp, artNetPort);
+
 const lightingData = await detectMusicSection(
-  "./python/music/snow_halation.wav",
-  "0.88", //0.915 0.83 うまくいった値
+  "./python/music/Dream_Believers.wav",
+  "0.915", //0.83 ~ 0.91 あたりまでが丁度いい
   "0.73"
 );
 
 async function main() {
-  resetDMX([1, 2]);
-  const bpmInterval = setupBPMInterval(lightingData);
+  controller.resetDMX([1, 2]);
+  const bpmInterval = controller.setupBPMInterval(lightingData);
 
   let currentTime = 0;
 
   const interval = setInterval(async () => {
     currentTime = await vlc.getTime();
 
-    updateLevel(currentTime, lightingData);
+    controller.updateLevel(currentTime, lightingData);
 
     const lastSection = lightingData.sections[lightingData.sections.length - 1];
     if (currentTime >= timeToSeconds(lastSection.end)) {
       clearInterval(interval);
       clearInterval(bpmInterval);
-      resetDMX([1, 2]);
+      controller.resetDMX([1, 2]);
       console.log("Lighting sequence completed");
     }
   }, 500);

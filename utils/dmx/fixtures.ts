@@ -54,6 +54,7 @@ export function createDMXData(
   return data;
 }
 
+//点灯するチャンネルのobjectからデータから配列に値をset
 function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   channels.forEach((channel) => {
     data[channel.number - 1] = channel.value;
@@ -61,7 +62,7 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-//levelから点灯するfixtureや値をセットする
+//levelから点灯するfixtureのobjectを作成
 function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
   switch (fixture) {
     case "spotlight": {
