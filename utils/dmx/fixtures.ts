@@ -1,29 +1,26 @@
-import { FixturesConfig, FixtureName, Channel } from "../../@types";
+import { Channel, universe } from "../../@types";
+import { getRandomValue } from "../utils";
+import { Config } from "../../@types";
 
-const colorPalettes = [
-  [255, 0, 0], //Red
-  [0, 255, 0], //Green
-  [0, 0, 255], //Blue
-  [255, 255, 0], //Yellow
-  [255, 0, 255], //Magenta
-  [0, 255, 255], //Cyan
-];
+// JSONファイルから設定を読み込み
+const channelConfig: Config = await Bun.file("./config.json").json();
 
-//JSONデータの読み込みと型定義
-const channelConfig: FixturesConfig = await Bun.file("./config.json").json();
+function getBPMSyncValue(
+  i: number,
+  speed: "normal" | "slow",
+  fixture: string
+): number {
+  if (fixture == "strobePatch") {
+    return i % 2 === 0 ? 100 : 255;
+  }
 
-function getRandomValue(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+  if (speed == "normal") {
+    return i % 2 === 0 ? 0 : 255;
+  } else if (speed == "slow") {
+    return i % 4 === 0 ? 0 : 255;
+  }
 
-function getRandomColor() {
-  const palette =
-    colorPalettes[Math.floor(Math.random() * colorPalettes.length)];
-  return {
-    r: palette[0],
-    g: palette[1],
-    b: palette[2],
-  };
+  return 0;
 }
 
 function getPulseValue(baseValue: number): number {
@@ -31,27 +28,16 @@ function getPulseValue(baseValue: number): number {
   return Math.max(0, Math.min(255, baseValue + pulseIntensity));
 }
 
-function getRandomPanTiltValue(): { pan: number; tilt: number } {
+function getRandomColor() {
+  const palette =
+    channelConfig.colorPalettes[
+      Math.floor(Math.random() * channelConfig.colorPalettes.length)
+    ];
   return {
-    pan: getRandomValue(90, 160),
-    tilt: getRandomValue(90, 180),
+    r: palette[0],
+    g: palette[1],
+    b: palette[2],
   };
-}
-
-//levelとfixtureNameからDMXのデータを作成する
-export function createDMXData(
-  fixtures: FixtureName[],
-  i: number,
-  level: string
-) {
-  let data = new Uint8Array(512);
-
-  fixtures.forEach((fixture) => {
-    const channels = getFixtureChannels(fixture, i, level);
-    data = setChannelValue(channels, data);
-  });
-
-  return data;
 }
 
 //点灯するチャンネルのobjectからデータから配列に値をset
@@ -62,169 +48,83 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
   return data;
 }
 
-//levelから点灯するfixtureのobjectを作成
-function getFixtureChannels(fixture: FixtureName, i, level): Channel[] {
-  switch (fixture) {
-    case "spotlight": {
-      const channels: Channel[] = [];
-      const config = channelConfig.spotlight;
+export function createDMXData(
+  i: number,
+  level: string,
+  universe: universe
+): Uint8Array {
+  let data = new Uint8Array(512);
 
-      //levelがlow以外の時、BPMに合わせて点滅させる
-      const { dimmer, shutter } =
-        i % 4 === 0 ? { dimmer: 0, shutter: 0 } : { dimmer: 255, shutter: 255 };
+  const levelConfig = channelConfig.levels[level];
+  if (!levelConfig) return data;
+  levelConfig.enableFixtures.map((fixture) => {
+    const fixtureConf = channelConfig.fixtures[fixture];
+    const settings = levelConfig.fixtureSettings[fixture];
 
-      //levelがlow以外の時、手前方向に傾ける
-      const tiltValue =
-        level === "mid" || level === "big" || level === "big_chorus"
-          ? 183
-          : 150;
+    if (fixtureConf.universe === universe) {
+      const list = createChannelList(fixture, fixtureConf, settings, i);
 
-      if (config.baseChannels && config.channels) {
-        config.baseChannels.forEach((baseChannel) => {
-          channels.push(
-            {
-              number: baseChannel + config.channels.color - 1,
-              value: 0,
-            },
-            {
-              number: baseChannel + config.channels.dimmer - 1,
-              value: dimmer,
-            },
-            {
-              number: baseChannel + config.channels.shutter - 1,
-              value: shutter,
-            },
-            {
-              number: baseChannel + config.channels.pan - 1,
-              value: 128,
-            },
-            {
-              number: baseChannel + config.channels.tilt - 1,
-              value: tiltValue,
-            },
-            {
-              number: baseChannel + config.channels.zoom - 1,
-              value: 255,
+      data = setChannelValue(list, data);
+    }
+  });
+
+  return data;
+}
+
+function createChannelList(
+  fixture: string,
+  fixtureConf,
+  settings,
+  i: number
+): Channel[] {
+  const list: Channel[] = [];
+  for (const [chName, cfOffset] of Object.entries(fixtureConf.channels)) {
+    const color = getRandomColor();
+
+    fixtureConf.baseChannels.map((ch) => {
+      if (Object.hasOwn(settings, chName)) {
+        let value = 0;
+
+        switch (settings[chName]) {
+          case "bpmSync":
+            value = getBPMSyncValue(i, "normal", fixture);
+            break;
+          case "bpmSyncSlow":
+            value = getBPMSyncValue(i, "slow", fixture);
+            break;
+          case "randomColor":
+            switch (chName) {
+              case "r":
+                value = getPulseValue(color.r);
+                break;
+              case "g":
+                value = getPulseValue(color.g);
+                break;
+              case "b":
+                value = getPulseValue(color.b);
+                break;
+              default:
+                break;
             }
-          );
-        });
-      }
-
-      return channels;
-    }
-
-    case "LEDWash": {
-      const channels: Channel[] = [];
-      const config = channelConfig.LEDWash;
-      const color = getRandomColor();
-      const { pan, tilt } = getRandomPanTiltValue();
-
-      if (config.baseChannels && config.channels) {
-        config.baseChannels.forEach((baseChannel) => {
-          channels.push(
-            {
-              number: baseChannel + config.channels.r - 1,
-              value: getPulseValue(color.r),
-            },
-            {
-              number: baseChannel + config.channels.g - 1,
-              value: getPulseValue(color.g),
-            },
-            {
-              number: baseChannel + config.channels.b - 1,
-              value: getPulseValue(color.b),
-            },
-            { number: baseChannel + config.channels.pan - 1, value: pan },
-            { number: baseChannel + config.channels.tilt - 1, value: tilt },
-            { number: baseChannel + config.channels.dimmer - 1, value: 255 },
-            { number: baseChannel + config.channels.shutter - 1, value: 255 },
-            { number: baseChannel + config.channels.zoom - 1, value: 255 }
-          );
-        });
-      }
-
-      return channels;
-    }
-
-    case "staticPatch": {
-      const channels: Channel[] = [];
-      const config = channelConfig.staticPatch;
-      const color =
-        level === "low" ? { r: 255, g: 255, b: 255 } : getRandomColor();
-
-      if (config.baseChannels && config.channels) {
-        config.baseChannels.forEach((baseChannel) => {
-          channels.push(
-            {
-              number: baseChannel + config.channels.r - 1,
-              value: getPulseValue(color.r),
-            },
-            {
-              number: baseChannel + config.channels.g - 1,
-              value: getPulseValue(color.g),
-            },
-            {
-              number: baseChannel + config.channels.b - 1,
-              value: getPulseValue(color.b),
-            },
-            { number: baseChannel + config.channels.dimmer - 1, value: 255 },
-            { number: baseChannel + config.channels.shutter - 1, value: 255 }
-          );
-        });
-      }
-
-      return channels;
-    }
-
-    case "strobePatch": {
-      const channels: Channel[] = [];
-      const config = channelConfig.strobePatch;
-
-      //levelがbig以上の時、BPMに合わせて点滅させる
-      const { dimmer, shutter } =
-        i % 2 === 0 && (level === "big" || level === "big_chorus")
-          ? { dimmer: 100, shutter: 255 }
-          : level === "low"
-          ? { dimmer: 200, shutter: 255 }
-          : { dimmer: 255, shutter: 255 };
-
-      if (config.baseChannels && config.channels) {
-        config.baseChannels.forEach((baseChannel) => {
-          channels.push(
-            {
-              number: baseChannel + config.channels.dimmer - 1,
-              value: dimmer,
-            },
-            {
-              number: baseChannel + config.channels.shutter - 1,
-              value: shutter,
-            }
-          );
-        });
-      }
-
-      return channels;
-    }
-
-    case "laser":
-    case "pyro":
-    case "fireworks": {
-      const config = channelConfig[fixture];
-      const channels: Channel[] = [];
-
-      if (config.startChannel && config.channelCount) {
-        for (
-          let i = config.startChannel;
-          i < config.startChannel + config.channelCount;
-          i++
-        ) {
-          channels.push({ number: i, value: 255 });
+            break;
+          case "random":
+            value = getRandomValue(
+              channelConfig.randomRange[0],
+              channelConfig.randomRange[1]
+            );
+            break;
+          default:
+            value = settings[chName];
+            break;
         }
-      }
-      return channels;
-    }
 
-    default:
-      return [];
+        list.push({
+          number: ch + cfOffset - 1,
+          value: value,
+        });
+      }
+    });
   }
+
+  return list;
 }

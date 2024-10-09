@@ -15,8 +15,8 @@ const artNetPort: number = 6454;
 const controller = new DMXController(artNetIp, artNetPort);
 
 const lightingData = await detectMusicSection(
-  "./python/music/Dream_Believers.wav",
-  "0.915", //0.83 ~ 0.91 あたりまでが丁度いい
+  "./python/music/mirage_voyage.wav",
+  "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
   "0.73"
 );
 

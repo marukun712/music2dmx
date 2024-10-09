@@ -1,55 +1,238 @@
 {
-  "spotlight": {
-    "baseChannels": [1, 12, 23, 34, 45, 56, 67, 78],
-    "channels": {
-      "color": 1,
-      "dimmer": 2,
-      "shutter": 3,
-      "pan": 7,
-      "tilt": 9,
-      "zoom": 11
+  "fixtures": {
+    "spotlight": {
+      "universe": 1,
+      "baseChannels": [1, 12, 23, 34, 45, 56, 67, 78],
+      "channels": {
+        "color": 1,
+        "dimmer": 2,
+        "shutter": 3,
+        "pan": 7,
+        "tilt": 9,
+        "zoom": 11
+      }
+    },
+    "staticPatch": {
+      "universe": 1,
+      "baseChannels": [201, 206, 211, 216, 221, 226, 231, 236, 241],
+      "channels": {
+        "r": 1,
+        "g": 2,
+        "b": 3,
+        "dimmer": 4,
+        "shutter": 5
+      }
+    },
+    "LEDWash": {
+      "universe": 1,
+      "baseChannels": [401, 409],
+      "channels": {
+        "r": 1,
+        "g": 2,
+        "b": 3,
+        "pan": 4,
+        "tilt": 5,
+        "dimmer": 6,
+        "shutter": 7,
+        "zoom": 8
+      }
+    },
+    "strobePatch": {
+      "universe": 1,
+      "baseChannels": [301, 303, 305, 307, 309, 311],
+      "channels": {
+        "dimmer": 1,
+        "shutter": 2
+      }
+    },
+    "pyro": {
+      "universe": 2,
+      "baseChannels": [201, 203],
+      "channels": {
+        "mode": 1,
+        "start": 2
+      }
+    },
+    "laser": {
+      "universe": 2,
+      "baseChannels": [301, 304],
+      "channels": {
+        "start": 1,
+        "angle": 2,
+        "num": 3
+      }
+    },
+    "fireworks": {
+      "universe": 2,
+      "baseChannels": [401, 402, 403],
+      "channels": {
+        "launch": 1
+      }
     }
   },
-  "staticPatch": {
-    "baseChannels": [201, 206, 211, 216, 221, 226, 231, 236, 241],
-    "channels": {
-      "r": 1,
-      "g": 2,
-      "b": 3,
-      "dimmer": 4,
-      "shutter": 5
+  "levels": {
+    "low": {
+      "enableFixtures": ["spotlight", "staticPatch", "strobePatch"],
+      "fixtureSettings": {
+        "spotlight": {
+          "dimmer": "bpmSyncSlow",
+          "shutter": "bpmSyncSlow",
+          "pan": 128,
+          "tilt": 150,
+          "zoom": 255
+        },
+        "staticPatch": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "dimmer": 255,
+          "shutter": 255
+        },
+        "strobePatch": {
+          "dimmer": 200,
+          "shutter": 255
+        }
+      }
+    },
+    "mid": {
+      "enableFixtures": ["spotlight", "LEDWash", "staticPatch", "strobePatch"],
+      "fixtureSettings": {
+        "spotlight": {
+          "dimmer": "bpmSyncSlow",
+          "shutter": "bpmSyncSlow",
+          "pan": 128,
+          "tilt": 150,
+          "zoom": 255
+        },
+        "LEDWash": {
+          "r": "randomColor",
+          "g": "randomColor",
+          "b": "randomColor",
+          "pan": "random",
+          "tilt": "random",
+          "dimmer": 255,
+          "shutter": 255,
+          "zoom": 255
+        },
+        "staticPatch": {
+          "r": "randomColor",
+          "g": "randomColor",
+          "b": "randomColor",
+          "dimmer": 255,
+          "shutter": 255
+        },
+        "strobePatch": {
+          "dimmer": 255,
+          "shutter": 255
+        }
+      }
+    },
+    "big": {
+      "enableFixtures": [
+        "spotlight",
+        "LEDWash",
+        "staticPatch",
+        "strobePatch",
+        "pyro"
+      ],
+      "fixtureSettings": {
+        "spotlight": {
+          "dimmer": "bpmSyncSlow",
+          "shutter": "bpmSyncSlow",
+          "pan": 128,
+          "tilt": 150,
+          "zoom": 255
+        },
+        "LEDWash": {
+          "r": "randomColor",
+          "g": "randomColor",
+          "b": "randomColor",
+          "pan": "random",
+          "tilt": "random",
+          "dimmer": 255,
+          "shutter": 255,
+          "zoom": 255
+        },
+        "staticPatch": {
+          "r": "randomColor",
+          "g": "randomColor",
+          "b": "randomColor",
+          "dimmer": 255,
+          "shutter": 255
+        },
+        "strobePatch": {
+          "dimmer": "bpmSync",
+          "shutter": 255
+        },
+        "pyro": {
+          "mode": 255,
+          "start": 255
+        }
+      }
+    },
+    "big_chorus": {
+      "enableFixtures": [
+        "spotlight",
+        "LEDWash",
+        "staticPatch",
+        "strobePatch",
+        "pyro",
+        "laser",
+        "fireworks"
+      ],
+      "fixtureSettings": {
+        "spotlight": {
+          "dimmer": "bpmSyncSlow",
+          "shutter": "bpmSyncSlow",
+          "pan": 128,
+          "tilt": 150,
+          "zoom": 255
+        },
+        "LEDWash": {
+          "r": "randomColor",
+          "g": "randomColor",
+          "b": "randomColor",
+          "pan": "random",
+          "tilt": "random",
+          "dimmer": 255,
+          "shutter": 255,
+          "zoom": 255
+        },
+        "staticPatch": {
+          "r": "random",
+          "g": "random",
+          "b": "random",
+          "dimmer": 255,
+          "shutter": 255
+        },
+        "strobePatch": {
+          "dimmer": "bpmSync",
+          "shutter": 255
+        },
+        "pyro": {
+          "mode": 255,
+          "start": 255
+        },
+        "laser": {
+          "start": 255,
+          "angle": "random",
+          "num": "random"
+        },
+        "fireworks": {
+          "launch": 255
+        }
+      }
     }
   },
-  "LEDWash": {
-    "baseChannels": [401, 409],
-    "channels": {
-      "r": 1,
-      "g": 2,
-      "b": 3,
-      "pan": 4,
-      "tilt": 5,
-      "dimmer": 6,
-      "shutter": 7,
-      "zoom": 8
-    }
-  },
-  "strobePatch": {
-    "baseChannels": [301, 303, 305, 307, 309, 311],
-    "channels": {
-      "dimmer": 1,
-      "shutter": 2
-    }
-  },
-  "laser": {
-    "startChannel": 301,
-    "channelCount": 6
-  },
-  "pyro": {
-    "startChannel": 201,
-    "channelCount": 4
-  },
-  "fireworks": {
-    "startChannel": 401,
-    "channelCount": 3
-  }
+
+  "colorPalettes": [
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 255, 0],
+    [255, 0, 255],
+    [0, 255, 255]
+  ],
+
+  "randomRange": [90, 160]
 }

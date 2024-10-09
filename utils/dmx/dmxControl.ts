@@ -32,11 +32,7 @@ export class DMXController {
             this.artNetIp,
             this.artNetPort,
             1,
-            createDMXData(
-              ["spotlight", "staticPatch", "strobePatch"],
-              i,
-              this.level
-            )
+            createDMXData(i, this.level, 1)
           );
           break;
 
@@ -45,11 +41,7 @@ export class DMXController {
             this.artNetIp,
             this.artNetPort,
             1,
-            createDMXData(
-              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-              i,
-              this.level
-            )
+            createDMXData(i, this.level, 1)
           );
           break;
 
@@ -58,17 +50,14 @@ export class DMXController {
             this.artNetIp,
             this.artNetPort,
             1,
-            createDMXData(
-              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-              i,
-              this.level
-            )
+            createDMXData(i, this.level, 1)
           );
+
           sendArtNetPacket(
             this.artNetIp,
             this.artNetPort,
             2,
-            createDMXData(["pyro"], i, this.level)
+            createDMXData(i, this.level, 2)
           );
           break;
 
@@ -77,17 +66,14 @@ export class DMXController {
             this.artNetIp,
             this.artNetPort,
             1,
-            createDMXData(
-              ["spotlight", "staticPatch", "strobePatch", "LEDWash"],
-              i,
-              this.level
-            )
+            createDMXData(i, this.level, 1)
           );
+
           sendArtNetPacket(
             this.artNetIp,
             this.artNetPort,
             2,
-            createDMXData(["laser", "pyro", "fireworks"], i, this.level)
+            createDMXData(i, this.level, 2)
           );
           break;
 
