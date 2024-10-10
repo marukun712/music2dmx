@@ -15,8 +15,8 @@ const artNetPort: number = 6454;
 const controller = new DMXController(artNetIp, artNetPort);
 
 const lightingData = await detectMusicSection(
-  "./python/music/mirage_voyage.wav",
-  "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
+  "./python/music/Snow_halation.wav",
+  "0.9", //0.83 ~ 0.91 あたりまでが丁度いい
   "0.73"
 );
 
@@ -25,6 +25,9 @@ async function main() {
   const bpmInterval = controller.setupBPMInterval(lightingData);
 
   let currentTime = 0;
+
+  await vlc.play();
+  await vlc.setTime(0);
 
   const interval = setInterval(async () => {
     currentTime = await vlc.getTime();
@@ -39,9 +42,6 @@ async function main() {
       console.log("Lighting sequence completed");
     }
   }, 500);
-
-  await vlc.play();
-  await vlc.setTime(0);
 }
 
 setTimeout(() => {

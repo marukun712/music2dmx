@@ -23,11 +23,6 @@ function getBPMSyncValue(
   return 0;
 }
 
-function getPulseValue(baseValue: number): number {
-  const pulseIntensity = getRandomValue(0, 50);
-  return Math.max(0, Math.min(255, baseValue + pulseIntensity));
-}
-
 function getRandomColor() {
   const palette =
     channelConfig.colorPalettes[
@@ -95,16 +90,16 @@ function createChannelList(
           case "randomColor":
             switch (chName) {
               case "r":
-                value = getPulseValue(color.r);
+                value = color.r;
                 break;
               case "g":
-                value = getPulseValue(color.g);
+                value = color.g;
                 break;
               case "b":
-                value = getPulseValue(color.b);
+                value = color.b;
                 break;
               default:
-                break;
+                value = getRandomValue(0, 255);
             }
             break;
           case "random":

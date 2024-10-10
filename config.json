@@ -214,9 +214,9 @@
           "start": 255
         },
         "laser": {
-          "start": 255,
-          "angle": "random",
-          "num": "random"
+          "start": "bpmSyncSlow",
+          "angle": 128,
+          "num": 255
         },
         "fireworks": {
           "launch": 255
@@ -226,12 +226,10 @@
   },
 
   "colorPalettes": [
-    [255, 0, 0],
-    [0, 255, 0],
-    [0, 0, 255],
     [255, 255, 0],
-    [255, 0, 255],
-    [0, 255, 255]
+    [0, 0, 255],
+    [0, 255, 255],
+    [0, 128, 255]
   ],
 
   "randomRange": [90, 160]
