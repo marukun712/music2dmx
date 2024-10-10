@@ -214,7 +214,7 @@
           "start": 255
         },
         "laser": {
-          "start": "bpmSyncSlow",
+          "start": 255,
           "angle": 128,
           "num": 255
         },

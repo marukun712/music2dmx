@@ -33,12 +33,14 @@ def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
     sc = librosa.feature.spectral_centroid(y=y, n_fft=frame_length, hop_length=hop_length)[0]
     sc = sc / np.max(sc)  # Normalize
 
-    # 推定サビ時刻（秒）を算出
-    n_ignore = 10
-    indices = np.argsort((sc + rms)[n_ignore:-n_ignore])[::-1] + n_ignore
     times = librosa.times_like(sc, hop_length=hop_length, sr=sr)
-    times = np.floor(times).tolist()  # Convert to regular Python list
-    chorus_estimated_time = float(times[indices[0]])  # Convert to Python float
+    total_duration = times[-1]
+
+    start_time_for_chorus = total_duration * 0.6
+    start_frame = np.where(times >= start_time_for_chorus)[0][0]
+
+    indices = np.argsort((sc[start_frame:] + rms[start_frame:]))[::-1] + start_frame
+    chorus_estimated_time = float(times[indices[0]])
 
     # セクションラベルを生成
     section_labels = [get_section_label(float(value), big_threshold, mid_threshold) for value in rms]  # Convert to Python float
@@ -67,7 +69,7 @@ def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
     for i, (time, label) in enumerate(zip(times, section_labels)):
         label_buffer.append(label)
         if i > 0 and section_labels[i - 1] != label:
-            if time > chorus_estimated_time and (section_labels[i - 1] == "big" or section_labels[i - 1] == "mid"):
+            if time > chorus_estimated_time and (section_labels[i - 1] == "big"):
                 create_section(last_created, times[i - 1], "big_chorus")
                 last_created = times[i - 1]
             elif len(label_buffer) >= min_section_length:

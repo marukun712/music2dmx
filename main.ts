@@ -15,10 +15,11 @@ const artNetPort: number = 6454;
 const controller = new DMXController(artNetIp, artNetPort);
 
 const lightingData = await detectMusicSection(
-  "./python/music/Snow_halation.wav",
-  "0.9", //0.83 ~ 0.91 あたりまでが丁度いい
+  "./python/music/yumeiro_parade.wav",
+  "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
   "0.73"
 );
+console.log(lightingData);
 
 async function main() {
   controller.resetDMX([1, 2]);
