@@ -1,6 +1,7 @@
 python/.venv/
 python/music/
-python/music_sections.json
-node_modules/
+python/__pycache__/
 python/temp/
+
+node_modules/
 .env
