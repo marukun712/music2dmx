@@ -1,48 +1,44 @@
-import * as VLC from "vlc-client";
 import { detectMusicSection } from "./utils/dmx/detectMusicSection";
-import { timeToSeconds } from "./utils/utils";
 import { DMXController } from "./utils/dmx/dmxControl";
-
-const vlc = new VLC.Client({
-  ip: "localhost",
-  port: 8080,
-  password: process.env.VLC_PASSWORD!,
-});
+import { Elysia } from "elysia";
+import { LightingData } from "./@types";
 
 const artNetIp: string = "localhost";
 const artNetPort: number = 6454;
 
 const controller = new DMXController(artNetIp, artNetPort);
 
-const lightingData = await detectMusicSection(
-  "./python/music/yumeiro_parade.wav",
-  "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
-  "0.73"
-);
-console.log(lightingData);
+let currentTime = 0;
+let lightingData: LightingData;
 
-async function main() {
+const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+
+app.post("/start", async ({ body }) => {
+  console.log(body);
+
   controller.resetDMX([1, 2]);
-  const bpmInterval = controller.setupBPMInterval(lightingData);
+  lightingData = await detectMusicSection(
+    "./python/music/yumeiro_parade.wav",
+    "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
+    "0.73"
+  );
+  console.log(lightingData);
 
-  let currentTime = 0;
+  controller.setupBPMInterval(lightingData);
 
-  await vlc.play();
-  await vlc.setTime(0);
+  return {
+    message: "The sequence has started.",
+  };
+});
 
-  const interval = setInterval(async () => {
-    currentTime = await vlc.getTime();
+app.post("/setTime", ({ body }) => {
+  controller.updateLevel(currentTime, lightingData);
 
-    controller.updateLevel(currentTime, lightingData);
+  return {
+    message: currentTime,
+  };
+});
 
-    const lastSection = lightingData.sections[lightingData.sections.length - 1];
-    if (currentTime >= timeToSeconds(lastSection.end)) {
-      clearInterval(interval);
-      clearInterval(bpmInterval);
-      controller.resetDMX([1, 2]);
-      console.log("Lighting sequence completed");
-    }
-  }, 500);
-}
-const playlist = await vlc.getTracks();
-console.log(playlist, typeof playlist);
+console.log(
+  `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
+);
