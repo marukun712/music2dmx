@@ -4,12 +4,12 @@ import { timeToSeconds } from "./utils/utils";
 import { DMXController } from "./utils/dmx/dmxControl";
 
 const vlc = new VLC.Client({
-  ip: "100.73.74.135",
+  ip: "localhost",
   port: 8080,
   password: process.env.VLC_PASSWORD!,
 });
 
-const artNetIp: string = "100.73.74.135";
+const artNetIp: string = "localhost";
 const artNetPort: number = 6454;
 
 const controller = new DMXController(artNetIp, artNetPort);
@@ -44,7 +44,5 @@ async function main() {
     }
   }, 500);
 }
-
-setTimeout(() => {
-  main();
-}, 3000);
+const playlist = await vlc.getTracks();
+console.log(playlist, typeof playlist);
