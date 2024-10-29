@@ -6,4 +6,4 @@ COPY . .
 
 RUN bun install
 
-CMD ["bun", "run", "dev"]
+CMD ["bun", "main.ts"]

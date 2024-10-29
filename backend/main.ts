@@ -1,5 +1,6 @@
-import { DMXController } from "./utils/dmx/dmxControl";
-import { Hono } from "hono";
+import { DMXController } from "./utils/dmx/dmxController";
+import { fastify } from "fastify";
+import fastifyCors from "@fastify/cors";
 import { LightingData } from "./@types";
 
 const artNetIp: string = "100.73.74.135";
@@ -9,34 +10,72 @@ const controller = new DMXController(artNetIp, artNetPort);
 
 let currentTime = 0;
 let lightingData: LightingData;
+let bpmInterval;
+const server = fastify();
 
-const app = new Hono();
-app.get("/", (c) => c.text("Hello Hono"));
+await server.register(fastifyCors, {
+  origin: true,
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+});
 
-app.post("/start", async (c) => {
-  lightingData = await c.req.json();
-  currentTime = 0;
+server.get("/", async (_request, reply) => {
+  return reply.send("Hello Fastify");
+});
+
+server.post("/start/", async (request, reply) => {
+  bpmInterval ? clearInterval(bpmInterval) : "";
+
+  try {
+    lightingData = request.body as LightingData;
+    console.log(lightingData);
+
+    currentTime = 0;
+
+    controller.resetDMX([1, 2]);
+    bpmInterval = controller.setupBPMInterval(lightingData);
+
+    return reply.send({
+      message: "The sequence has started.",
+    });
+  } catch (error) {
+    console.error(error);
+    return reply.status(500).send({
+      error: "Failed to start sequence",
+    });
+  }
+});
+
+server.post("/setTime/", async (request, reply) => {
+  try {
+    const { time } = request.body as { time: number };
+    currentTime = Number(time);
+    controller.updateLevel(currentTime, lightingData);
+
+    return reply.send({
+      message: currentTime,
+    });
+  } catch (error) {
+    console.error(error);
+    return reply.status(500).send({
+      error: "Failed to set time",
+    });
+  }
+});
+
+server.get("/end/", async (_request, reply) => {
+  bpmInterval ? clearInterval(bpmInterval) : "";
 
   controller.resetDMX([1, 2]);
 
-  console.log(lightingData);
-
-  controller.setupBPMInterval(lightingData);
-
-  return c.json({
-    message: "The sequence has started.",
+  return reply.send({
+    message: "The sequence has completed.",
   });
 });
 
-app.post("/setTime", async (c) => {
-  const json = await c.req.json();
-  currentTime = Number(json.time);
-  controller.updateLevel(currentTime, lightingData);
-
-  console.log(currentTime);
-  return c.json({
-    message: currentTime,
-  });
+server.listen({ port: 8080, host: "0.0.0.0" }, (err, address) => {
+  if (err) {
+    fastify.log.error(err);
+  }
+  console.log(address);
 });
-
-export default app;

@@ -55,31 +55,31 @@
 
         const url = URL.createObjectURL(blob);
 
-        const lightingData = await detectMusicSection(
-          blob,
-          "0.83", // 0.83 ~ 0.91 あたりまでが丁度いい
-          "0.73"
-        );
+        const lightingData = await detectMusicSection(blob, "0.91", "0.73");
 
-        console.log(lightingData);
-
-        const res = await fetch("http://localhost:3000/start", {
+        const res = await fetch("http://localhost:8080/start/", {
           method: "POST",
           headers: {
-            "Content-Type": file.type,
+            "Content-Type": "application/json",
           },
-          body: blob,
+          body: JSON.stringify(lightingData),
         });
-        console.log(res);
 
         started = true;
 
         document.getElementById("audio").setAttribute("src", url);
+        audio.play();
+      }
+
+      async function onEnd() {
+        if (started) {
+          await fetch("http://localhost:8080/end/");
+        }
       }
 
       async function sendCurrentTime() {
         if (started) {
-          await fetch("http://localhost:3000/setTime", {
+          await fetch("http://localhost:8080/setTime/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -97,6 +97,7 @@
           sendCurrentTime();
         }
       });
+      addEventListener("ended", onEnd);
 
       input.addEventListener("change", onChangeFile);
     </script>
