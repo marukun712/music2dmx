@@ -12,94 +12,60 @@
   </head>
 
   <body>
-    <div class="navbar bg-base-100">
-      <a class="btn btn-ghost text-xl">DMX Auto Controller</a>
+    <div id="container">
+      <div class="navbar bg-base-100">
+        <a class="btn btn-ghost text-xl">DMX Auto Controller</a>
+      </div>
+
+      <div class="flex justify-center my-24">
+        <input
+          type="file"
+          placeholder="Select File..."
+          id="file"
+          class="file-input file-input-bordered"
+        />
+
+        <audio src="" class="mx-24" id="audio" controls></audio>
+      </div>
+
+      <div class="w-1/2 m-auto my-24">
+        <div>
+          <p>big_threshold</p>
+          <input
+            type="range"
+            id="big_threshold"
+            class="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.83"
+          />
+          <p id="bigValue">0.83</p>
+        </div>
+
+        <div class="my-24">
+          <p>mid_threshold</p>
+          <input
+            type="range"
+            id="mid_threshold"
+            class="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.73"
+          />
+          <p id="midValue">0.73</p>
+          <p class="text-center">
+            big_thresholdは、音量レベル大、mid_thresholdは音量レベル中として認識される音量の閾値を表しています。
+          </p>
+          <br />
+          <p class="text-center">
+            照明が派手すぎる場合は、値を上げると、逆に地味すぎる場合は値を下げると適切な照明になります。
+          </p>
+        </div>
+      </div>
+
+      <script src="index.js"></script>
     </div>
-
-    <div class="flex justify-center my-24">
-      <input
-        type="file"
-        placeholder="Select File..."
-        id="file"
-        class="file-input file-input-bordered"
-      />
-
-      <audio src="" class="flex-none" id="audio" controls></audio>
-    </div>
-
-    <script>
-      const input = document.getElementById("file");
-      const audio = document.getElementById("audio");
-      let started = false;
-
-      async function detectMusicSection(blob, big_threshold, mid_threshold) {
-        const formData = new FormData();
-
-        formData.append("file", blob, "audio.wav");
-        formData.append("big_threshold", big_threshold);
-        formData.append("mid_threshold", mid_threshold);
-
-        const req = await fetch("http://127.0.0.1:8000/analyze/", {
-          method: "POST",
-          body: formData,
-        });
-
-        const json = await req.json();
-
-        return json;
-      }
-
-      async function onChangeFile() {
-        const file = input.files[0];
-        const blob = new Blob([file], { type: file.type });
-
-        const url = URL.createObjectURL(blob);
-
-        const lightingData = await detectMusicSection(blob, "0.91", "0.73");
-
-        const res = await fetch("http://localhost:8080/start/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(lightingData),
-        });
-
-        started = true;
-
-        document.getElementById("audio").setAttribute("src", url);
-        audio.play();
-      }
-
-      async function onEnd() {
-        if (started) {
-          await fetch("http://localhost:8080/end/");
-        }
-      }
-
-      async function sendCurrentTime() {
-        if (started) {
-          await fetch("http://localhost:8080/setTime/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ time: audio.currentTime }),
-          });
-        }
-      }
-
-      audio.addEventListener("seeked", sendCurrentTime);
-      audio.addEventListener("pause", sendCurrentTime);
-      audio.addEventListener("play", sendCurrentTime);
-      audio.addEventListener("timeupdate", () => {
-        if (!audio.paused && !audio.seeking) {
-          sendCurrentTime();
-        }
-      });
-      addEventListener("ended", onEnd);
-
-      input.addEventListener("change", onChangeFile);
-    </script>
   </body>
 </html>
