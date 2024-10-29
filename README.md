@@ -12,7 +12,7 @@ UE5.1.1 の DMX サンプルプロジェクトで動作確認しています。
 docker-compose up
 ```
 
-localhost:5173 で WebUI が起動します。
+localhost:5173 で WebUI が起動します。照明効果を Unreal Engine に反映させるには、ArtNet が受信可能な状態で UE を起動しておく必要があります。
 
 # Options
 
