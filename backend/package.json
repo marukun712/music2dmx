@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "dev": "bun run --hot main.ts"
+  },
   "dependencies": {
     "@types/node": "^22.5.5",
     "dgram": "^1.0.1",
     "elysia": "^1.1.23",
+    "hono": "^4.6.7",
     "vlc-client": "^1.1.1"
   },
   "devDependencies": {

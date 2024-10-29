@@ -1,9 +1,9 @@
 import { detectMusicSection } from "./utils/dmx/detectMusicSection";
 import { DMXController } from "./utils/dmx/dmxControl";
-import { Elysia } from "elysia";
+import { Hono } from "hono";
 import { LightingData } from "./@types";
 
-const artNetIp: string = "localhost";
+const artNetIp: string = "100.73.74.135";
 const artNetPort: number = 6454;
 
 const controller = new DMXController(artNetIp, artNetPort);
@@ -11,34 +11,38 @@ const controller = new DMXController(artNetIp, artNetPort);
 let currentTime = 0;
 let lightingData: LightingData;
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
+const app = new Hono();
 
-app.post("/start", async ({ body }) => {
-  console.log(body);
+app.get("/", (c) => c.text("Hello Hono"));
+
+app.post("/start", async (c) => {
+  const blob = await c.req.blob();
+  currentTime = 0;
 
   controller.resetDMX([1, 2]);
   lightingData = await detectMusicSection(
-    "./python/music/yumeiro_parade.wav",
-    "0.83", //0.83 ~ 0.91 あたりまでが丁度いい
+    blob,
+    "0.83", // 0.83 ~ 0.91 あたりまでが丁度いい
     "0.73"
   );
   console.log(lightingData);
 
   controller.setupBPMInterval(lightingData);
 
-  return {
+  return c.json({
     message: "The sequence has started.",
-  };
+  });
 });
 
-app.post("/setTime", ({ body }) => {
+app.post("/setTime", async (c) => {
+  const json = await c.req.json();
+  currentTime = Number(json.time);
   controller.updateLevel(currentTime, lightingData);
 
-  return {
+  console.log(currentTime);
+  return c.json({
     message: currentTime,
-  };
+  });
 });
 
-console.log(
-  `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`
-);
+export default app;

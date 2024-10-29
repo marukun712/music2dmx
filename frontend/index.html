@@ -16,17 +16,57 @@
       <a class="btn btn-ghost text-xl">DMX Auto Controller</a>
     </div>
 
-    <div id="app" class="w-3/4 m-auto py-12">
-      <p class="w-1/2 m-auto">Select File</p>
-
+    <div class="m-64">
       <input
         type="file"
         placeholder="Select File..."
-        class="input input-bordered w-1/2 block m-auto my-12"
+        id="file"
+        class="file-input file-input-bordered"
       />
 
-      <button class="btn btn-primary">Create Packet</button>
+      <audio src="" id="audio" controls></audio>
     </div>
-    <script></script>
+
+    <script>
+      const input = document.getElementById("file");
+      const audio = document.getElementById("audio");
+
+      async function onChangeFile() {
+        const file = input.files[0];
+        const blob = new Blob([file], { type: file.type });
+
+        const url = URL.createObjectURL(blob);
+        document.getElementById("audio").setAttribute("src", url);
+
+        await fetch("http://localhost:3000/start", {
+          method: "POST",
+          headers: {
+            "Content-Type": file.type,
+          },
+          body: blob,
+        });
+      }
+
+      async function sendCurrentTime() {
+        await fetch("http://localhost:3000/setTime", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ time: audio.currentTime }),
+        });
+      }
+
+      audio.addEventListener("seeked", sendCurrentTime);
+      audio.addEventListener("pause", sendCurrentTime);
+      audio.addEventListener("play", sendCurrentTime);
+      audio.addEventListener("timeupdate", () => {
+        if (!audio.paused && !audio.seeking) {
+          sendCurrentTime();
+        }
+      });
+
+      input.addEventListener("change", onChangeFile);
+    </script>
   </body>
 </html>

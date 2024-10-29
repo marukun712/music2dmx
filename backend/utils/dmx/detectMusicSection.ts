@@ -1,13 +1,9 @@
 export async function detectMusicSection(
-  path: string,
+  blob: Blob,
   big_threshold: string,
   mid_threshold: string
 ) {
   const formData = new FormData();
-  const file = Bun.file(path);
-  const buf = await file.arrayBuffer();
-
-  const blob = new Blob([buf], { type: "audio/wav" });
 
   formData.append("file", blob, "audio.wav");
   formData.append("big_threshold", big_threshold);
