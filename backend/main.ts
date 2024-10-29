@@ -3,8 +3,8 @@ import { fastify } from "fastify";
 import fastifyCors from "@fastify/cors";
 import { LightingData } from "./@types";
 
-const artNetIp: string = "100.73.74.135";
-const artNetPort: number = 6454;
+const artNetIp = Bun.env.ARTNET_IP;
+const artNetPort = Number(Bun.env.ARTNET_PORT);
 
 const controller = new DMXController(artNetIp, artNetPort);
 

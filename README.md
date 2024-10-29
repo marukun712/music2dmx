@@ -13,3 +13,17 @@ docker-compose up
 ```
 
 localhost:5173 で WebUI が起動します。
+
+# Options
+
+環境変数で ArtNet の IP とポート番号を指定可能。
+
+docker-compose.yml
+
+```
+~
+environment:
+  - ARTNET_IP=localhost
+  - ARTNET_PORT=6454
+~
+```

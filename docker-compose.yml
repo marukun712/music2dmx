@@ -14,6 +14,9 @@ services:
       - "8080:8080"
     volumes:
       - "./backend:/app"
+    environment:
+      - ARTNET_IP=localhost
+      - ARTNET_PORT=6454
 
   web:
     build:
