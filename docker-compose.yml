@@ -1,0 +1,25 @@
+services:
+  python:
+    build:
+      context: ./backend/python
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./backend/python:/app"
+
+  bun:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./backend:/app"
+
+  web:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - "./frontend:/app"
+      - "/app/node_modules"

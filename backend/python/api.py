@@ -1,12 +1,20 @@
 import librosa
 import librosa.display
 import numpy as np
-import json
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
-from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 音量から照明効果の大/中/小を区分
 def get_section_label(value, big_threshold:float, mid_threshold:float):
@@ -83,11 +91,16 @@ def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
     return jsonData
 
 # APIエンドポイント
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 @app.post("/analyze/")
 async def analyze(file: UploadFile = File(...), big_threshold = Form(), mid_threshold = Form()):
     big_threshold = float(big_threshold)
     mid_threshold = float(mid_threshold)
 
+    os.makedirs("./temp/", exist_ok=True)
     file_location = f"./temp/{file.filename}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())

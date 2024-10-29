@@ -16,7 +16,7 @@
       <a class="btn btn-ghost text-xl">DMX Auto Controller</a>
     </div>
 
-    <div class="m-64">
+    <div class="flex justify-center my-24">
       <input
         type="file"
         placeholder="Select File..."
@@ -24,37 +24,69 @@
         class="file-input file-input-bordered"
       />
 
-      <audio src="" id="audio" controls></audio>
+      <audio src="" class="flex-none" id="audio" controls></audio>
     </div>
 
     <script>
       const input = document.getElementById("file");
       const audio = document.getElementById("audio");
+      let started = false;
+
+      async function detectMusicSection(blob, big_threshold, mid_threshold) {
+        const formData = new FormData();
+
+        formData.append("file", blob, "audio.wav");
+        formData.append("big_threshold", big_threshold);
+        formData.append("mid_threshold", mid_threshold);
+
+        const req = await fetch("http://127.0.0.1:8000/analyze/", {
+          method: "POST",
+          body: formData,
+        });
+
+        const json = await req.json();
+
+        return json;
+      }
 
       async function onChangeFile() {
         const file = input.files[0];
         const blob = new Blob([file], { type: file.type });
 
         const url = URL.createObjectURL(blob);
-        document.getElementById("audio").setAttribute("src", url);
 
-        await fetch("http://localhost:3000/start", {
+        const lightingData = await detectMusicSection(
+          blob,
+          "0.83", // 0.83 ~ 0.91 あたりまでが丁度いい
+          "0.73"
+        );
+
+        console.log(lightingData);
+
+        const res = await fetch("http://localhost:3000/start", {
           method: "POST",
           headers: {
             "Content-Type": file.type,
           },
           body: blob,
         });
+        console.log(res);
+
+        started = true;
+
+        document.getElementById("audio").setAttribute("src", url);
       }
 
       async function sendCurrentTime() {
-        await fetch("http://localhost:3000/setTime", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ time: audio.currentTime }),
-        });
+        if (started) {
+          await fetch("http://localhost:3000/setTime", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ time: audio.currentTime }),
+          });
+        }
       }
 
       audio.addEventListener("seeked", sendCurrentTime);

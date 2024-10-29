@@ -1,4 +1,3 @@
-import { detectMusicSection } from "./utils/dmx/detectMusicSection";
 import { DMXController } from "./utils/dmx/dmxControl";
 import { Hono } from "hono";
 import { LightingData } from "./@types";
@@ -12,19 +11,14 @@ let currentTime = 0;
 let lightingData: LightingData;
 
 const app = new Hono();
-
 app.get("/", (c) => c.text("Hello Hono"));
 
 app.post("/start", async (c) => {
-  const blob = await c.req.blob();
+  lightingData = await c.req.json();
   currentTime = 0;
 
   controller.resetDMX([1, 2]);
-  lightingData = await detectMusicSection(
-    blob,
-    "0.83", // 0.83 ~ 0.91 あたりまでが丁度いい
-    "0.73"
-  );
+
   console.log(lightingData);
 
   controller.setupBPMInterval(lightingData);
