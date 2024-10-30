@@ -1,16 +1,16 @@
 const input = document.getElementById("file");
 const audio = document.getElementById("audio");
 
-const big_threshold = document.getElementById("big_threshold");
+const high_threshold = document.getElementById("high_threshold");
 const mid_threshold = document.getElementById("mid_threshold");
 
 let loading = false;
 
-async function detectMusicSection(blob, big_threshold, mid_threshold) {
+async function detectMusicSection(blob, high_threshold, mid_threshold) {
   const formData = new FormData();
 
   formData.append("file", blob, "audio.wav");
-  formData.append("big_threshold", big_threshold);
+  formData.append("high_threshold", high_threshold);
   formData.append("mid_threshold", mid_threshold);
 
   const req = await fetch("http://localhost:8000/analyze/", {
@@ -68,7 +68,7 @@ async function onChangeFile() {
 
   const lightingData = await detectMusicSection(
     blob,
-    big_threshold.value,
+    high_threshold.value,
     mid_threshold.value
   );
 
@@ -106,8 +106,8 @@ async function sendCurrentTime() {
 }
 
 function onChangeSlider(type, event) {
-  if (type == "big") {
-    document.getElementById("bigValue").innerHTML = event.target.value;
+  if (type == "high") {
+    document.getElementById("highValue").innerHTML = event.target.value;
   } else if (type == "mid") {
     document.getElementById("midValue").innerHTML = event.target.value;
   }
@@ -124,8 +124,8 @@ audio.addEventListener("timeupdate", () => {
 audio.addEventListener("ended", onEnd);
 
 input.addEventListener("change", onChangeFile);
-big_threshold.addEventListener("input", (event) => {
-  onChangeSlider("big", event);
+high_threshold.addEventListener("input", (event) => {
+  onChangeSlider("high", event);
 });
 mid_threshold.addEventListener("input", (event) => {
   onChangeSlider("mid", event);

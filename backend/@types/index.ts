@@ -1,6 +1,4 @@
-export type universe = 1 | 2;
-
-export type level = "low" | "mid" | "big" | "big_chorus";
+export type level = "low" | "mid" | "high" | "big_chorus";
 
 interface Section {
   start: string;
@@ -22,7 +20,7 @@ interface Fixtures {
   universe: number;
   baseChannels: number[];
   channels: {
-    [key: string]: number | string; // 数値または文字列のキー値ペア
+    [key: string]: number | string;
   };
 }
 
@@ -30,7 +28,7 @@ interface LevelSettings {
   enableFixtures: string[];
   fixtureSettings: {
     [key: string]: {
-      [key: string]: number | string; // 数値または文字列のキー値ペア
+      [key: string]: number | string;
     };
   };
 }

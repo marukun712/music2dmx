@@ -127,7 +127,7 @@
         }
       }
     },
-    "big": {
+    "high": {
       "enableFixtures": [
         "spotlight",
         "LEDWash",

@@ -17,16 +17,16 @@ app.add_middleware(
 )
 
 # 音量から照明効果の大/中/小を区分
-def get_section_label(value, big_threshold:float, mid_threshold:float):
-    if value > big_threshold:
-        return "big"
+def get_section_label(value, high_threshold:float, mid_threshold:float):
+    if value > high_threshold:
+        return "high"
     elif value > mid_threshold:
         return "mid"
     else:
         return "low"
 
 # 音声解析関数
-def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
+def analyze_audio(file_path: str, high_threshold:float, mid_threshold:float):
     y, sr = librosa.load(file_path)
     tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
@@ -51,7 +51,7 @@ def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
     chorus_estimated_time = float(times[indices[0]])
 
     # セクションラベルを生成
-    section_labels = [get_section_label(float(value), big_threshold, mid_threshold) for value in rms]  # Convert to Python float
+    section_labels = [get_section_label(float(value), high_threshold, mid_threshold) for value in rms]  # Convert to Python float
     min_section_length = 4
     label_buffer = []
     last_created = 0
@@ -77,7 +77,7 @@ def analyze_audio(file_path: str, big_threshold:float, mid_threshold:float):
     for i, (time, label) in enumerate(zip(times, section_labels)):
         label_buffer.append(label)
         if i > 0 and section_labels[i - 1] != label:
-            if time > chorus_estimated_time and (section_labels[i - 1] == "big"):
+            if time > chorus_estimated_time and (section_labels[i - 1] == "high"):
                 create_section(last_created, times[i - 1], "big_chorus")
                 last_created = times[i - 1]
             elif len(label_buffer) >= min_section_length:
@@ -96,8 +96,8 @@ async def root():
     return {"message": "Hello World"}
 
 @app.post("/analyze/")
-async def analyze(file: UploadFile = File(...), big_threshold = Form(), mid_threshold = Form()):
-    big_threshold = float(big_threshold)
+async def analyze(file: UploadFile = File(...), high_threshold = Form(), mid_threshold = Form()):
+    high_threshold = float(high_threshold)
     mid_threshold = float(mid_threshold)
 
     os.makedirs("./temp/", exist_ok=True)
@@ -106,7 +106,7 @@ async def analyze(file: UploadFile = File(...), big_threshold = Form(), mid_thre
         file_object.write(file.file.read())
 
     # 音声解析を実行
-    result = analyze_audio(file_location,big_threshold,mid_threshold)
+    result = analyze_audio(file_location,high_threshold,mid_threshold)
 
     # 結果をJSONで返す
     return JSONResponse(content=result)

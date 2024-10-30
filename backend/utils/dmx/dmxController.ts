@@ -45,7 +45,7 @@ export class DMXController {
           );
           break;
 
-        case "big":
+        case "high":
           sendArtNetPacket(
             this.artNetIp,
             this.artNetPort,

@@ -1,4 +1,4 @@
-import { Channel, universe } from "../../@types";
+import { Channel } from "../../@types";
 import { getRandomValue } from "../utils";
 import { Config } from "../../@types";
 
@@ -46,7 +46,7 @@ function setChannelValue(channels: Channel[], data: Uint8Array): Uint8Array {
 export function createDMXData(
   i: number,
   level: string,
-  universe: universe
+  universe: number
 ): Uint8Array {
   let data = new Uint8Array(512);
 

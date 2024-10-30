@@ -24,6 +24,7 @@ server.get("/", async (_request, reply) => {
 });
 
 server.post("/start/", async (request, reply) => {
+  console.log(artNetIp, artNetPort);
   bpmInterval ? clearInterval(bpmInterval) : "";
 
   try {
