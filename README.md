@@ -17,13 +17,13 @@ localhost:5173 で WebUI が起動します。照明効果を Unreal Engine に�
 # Options
 
 環境変数で ArtNet の IP とポート番号を指定可能。
-
+localhost に送信する場合は、host.docker.internal を指定してください。
 docker-compose.yml
 
 ```
 ~
 environment:
-  - ARTNET_IP=localhost
+  - ARTNET_IP=host.docker.internal
   - ARTNET_PORT=6454
 ~
 ```

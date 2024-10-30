@@ -15,7 +15,7 @@ services:
     volumes:
       - "./backend:/app"
     environment:
-      - ARTNET_IP=localhost
+      - ARTNET_IP=host.docker.internal
       - ARTNET_PORT=6454
 
   web:
