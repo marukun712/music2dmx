@@ -1,4 +1,4 @@
-import { level, universe, LightingData } from "../../@types";
+import { level, LightingData } from "../../@types";
 import { sendArtNetPacket } from "./ArtNet";
 import { createDMXData } from "./fixtures";
 import { timeToSeconds } from "../utils";
@@ -14,7 +14,7 @@ export class DMXController {
   }
 
   // DMXのリセットを行う関数
-  public resetDMX(universes: universe[]): void {
+  public resetDMX(universes): void {
     universes.map((u) => {
       sendArtNetPacket(this.artNetIp, this.artNetPort, u, new Uint8Array(512)); // 空のデータを送信
     });

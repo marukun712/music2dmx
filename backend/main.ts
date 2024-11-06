@@ -76,7 +76,7 @@ server.get("/end/", async (_request, reply) => {
 
 server.listen({ port: 8080, host: "0.0.0.0" }, (err, address) => {
   if (err) {
-    fastify.log.error(err);
+    console.error(err);
   }
   console.log(address);
 });
